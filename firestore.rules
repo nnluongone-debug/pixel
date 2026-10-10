@@ -1,0 +1,104 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function validProfile() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['email', 'name', 'birthYear', 'gender', 'address', 'updatedAt'])
+        && d.keys().hasAll(['email', 'updatedAt'])
+        && d.email == request.auth.token.email
+        && d.updatedAt is timestamp
+        && (!('name' in d) || (d.name is string && d.name.size() <= 40))
+        && (!('birthYear' in d) || d.birthYear == null
+            || (d.birthYear is int && d.birthYear >= 1900 && d.birthYear <= request.time.year()))
+        && (!('gender' in d) || d.gender in ['male', 'female', 'other', 'unspecified'])
+        && (!('address' in d) || (d.address is string && d.address.size() <= 160));
+    }
+
+    // Synced docs mirror the app's SQLite rows (camelCase) plus updatedAt
+    // (int, epoch ms), deleted (bool) and syncedAt (server timestamp).
+    // Tombstones keep only id/updatedAt/deleted/syncedAt.
+    function isTombstone(docId) {
+      let d = request.resource.data;
+      return d.deleted == true
+        && d.keys().hasOnly(['id', 'updatedAt', 'deleted', 'syncedAt'])
+        && d.keys().hasAll(['syncedAt'])
+        && d.syncedAt == request.time
+        && d.id == docId
+        && d.updatedAt is int;
+    }
+
+    function validHabitDoc(docId) {
+      let d = request.resource.data;
+      return isTombstone(docId) || (
+        d.keys().hasOnly(['id', 'name', 'type', 'target', 'currentProgress',
+          'colorHex', 'iconName', 'unit', 'scheduleDays', 'reminderMinutes',
+          'createdAt', 'progressDate', 'updatedAt', 'deleted', 'syncedAt'])
+        && d.keys().hasAll(['id', 'name', 'type', 'target', 'updatedAt', 'deleted', 'syncedAt'])
+        && d.syncedAt == request.time
+        && d.id == docId
+        && d.deleted == false
+        && d.updatedAt is int
+        && d.name is string && d.name.size() >= 1 && d.name.size() <= 32
+        && d.type in ['counter', 'checklist', 'timer']
+        && d.target is int && d.target > 0
+        && (!('currentProgress' in d) || (d.currentProgress is int && d.currentProgress >= 0))
+        && (!('scheduleDays' in d) || (d.scheduleDays is int && d.scheduleDays >= 1 && d.scheduleDays <= 127))
+        && (!('reminderMinutes' in d) || d.reminderMinutes == null
+            || (d.reminderMinutes is int && d.reminderMinutes >= 0 && d.reminderMinutes <= 1439))
+      );
+    }
+
+    function validCheckInDoc(docId) {
+      let d = request.resource.data;
+      return isTombstone(docId) || (
+        d.keys().hasOnly(['id', 'habitId', 'date', 'xpEarned', 'gridX', 'gridY',
+          'updatedAt', 'deleted', 'syncedAt'])
+        && d.keys().hasAll(['id', 'habitId', 'date', 'xpEarned', 'gridX', 'gridY',
+          'updatedAt', 'deleted', 'syncedAt'])
+        && d.syncedAt == request.time
+        && d.id == docId
+        && d.deleted == false
+        && d.updatedAt is int
+        && d.habitId is string
+        && d.date is string && d.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && d.xpEarned is int && d.xpEarned >= 0 && d.xpEarned <= 1000
+        && d.gridX is int && d.gridY is int && d.gridY >= 0
+      );
+    }
+
+    match /loginCodes/{doc} {
+      allow read, write: if false;
+    }
+
+    match /loginLimits/{doc} {
+      allow read, write: if false;
+    }
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid) && validProfile();
+      allow delete: if false;
+
+      match /habits/{id} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && validHabitDoc(id);
+        allow delete: if isOwner(uid);
+      }
+
+      match /checkIns/{id} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && validCheckInDoc(id);
+        allow delete: if isOwner(uid);
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
