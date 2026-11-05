@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_theme.dart';
 import '../locker/locker_entry_card.dart';
+import 'config_feedback_card.dart';
 import 'config_language_card.dart';
 import 'config_notifications_card.dart';
 import 'config_sound_card.dart';
 import 'love_demo_card.dart';
 
-/// Config tab: language, sound, brick themes, notifications and reminders.
+/// Config tab: language, sound, brick themes, notifications, reminders and
+/// feedback.
 class ConfigScreen extends StatelessWidget {
   const ConfigScreen({super.key});
 
@@ -28,6 +30,8 @@ class ConfigScreen extends StatelessWidget {
         const ConfigNotificationsCard(),
         const SizedBox(height: 24),
         const LoveDemoCard(),
+        const SizedBox(height: 24),
+        const ConfigFeedbackCard(),
       ],
     );
   }

@@ -9,6 +9,7 @@ import 'package:pixel_quest/firebase_options.dart';
 import 'package:pixel_quest/main.dart';
 import 'package:pixel_quest/providers/account_providers.dart';
 import 'package:pixel_quest/providers/locale_providers.dart';
+import 'package:pixel_quest/providers/onboarding_providers.dart';
 import 'package:pixel_quest/providers/repository_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,6 +36,7 @@ void main() {
       'app_language',
       lang == 'vi' ? AppLanguage.vietnamese.name : AppLanguage.english.name,
     );
+    await prefs.setBool(onboardingDoneKey, true);
     await StoreDemoSeeder.seed(db, lang: lang);
 
     await tester.pumpWidget(

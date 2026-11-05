@@ -1229,4 +1229,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get titleConfig => 'Config';
+
+  @override
+  String get onboardingSkip => 'SKIP';
+
+  @override
+  String get onboardingNext => 'NEXT';
+
+  @override
+  String get onboardingStart => 'START';
+
+  @override
+  String get onboardingWelcomeTitle => 'Build habits, pixel by pixel';
+
+  @override
+  String get onboardingWelcomeBody =>
+      'Add the habits you want to keep and check them in every day.';
+
+  @override
+  String get onboardingMatrixTitle => 'Every check-in drops a brick';
+
+  @override
+  String get onboardingMatrixBody =>
+      'Fill a full row to clear it and earn bonus XP.';
+
+  @override
+  String get onboardingRewardsTitle => 'Level up, unlock rewards';
+
+  @override
+  String get onboardingRewardsBody =>
+      'Earn badges and unlock brick skins and sound packs in the Locker.';
+
+  @override
+  String get onboardingRemindersTitle => 'Never miss a day';
+
+  @override
+  String get onboardingRemindersBody =>
+      'Turn on reminders so the app can nudge you at the right time.';
+
+  @override
+  String get onboardingEnableReminders => 'ENABLE REMINDERS';
+
+  @override
+  String get onboardingRemindersOn => 'Reminders enabled';
+
+  @override
+  String get onboardingRemindersDenied =>
+      'You can turn them on later in Config';
+
+  @override
+  String get configFeedbackTitle => 'Feedback & support';
+
+  @override
+  String get configFeedbackBody => 'Found a bug or have an idea? Tell us!';
+
+  @override
+  String get configFeedbackSend => 'SEND FEEDBACK';
+
+  @override
+  String get configReplayIntro => 'REPLAY INTRO';
+
+  @override
+  String configAppVersion(String version, String build) {
+    return 'Version $version ($build)';
+  }
+
+  @override
+  String feedbackNoMailApp(String email) {
+    return 'No email app found. Write to $email';
+  }
+
+  @override
+  String get feedbackCopy => 'COPY';
+
+  @override
+  String get feedbackEmailSubject => 'Feedback';
+
+  @override
+  String get feedbackEmailHint => 'Describe the bug or idea here:';
 }

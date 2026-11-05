@@ -6,12 +6,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app/app_shell.dart';
 import 'core/theme/app_theme.dart';
 import 'core/widgets/day_rollover_refresher.dart';
+import 'features/onboarding/onboarding_gate.dart';
 import 'data/database/app_database.dart';
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/account_providers.dart';
 import 'providers/home_widget_providers.dart';
 import 'providers/locale_providers.dart';
+import 'providers/onboarding_providers.dart';
 import 'providers/repository_providers.dart';
 import 'services/reminder_service.dart';
 
@@ -22,6 +24,7 @@ Future<void> main() async {
   await initializeReminders();
   final db = await AppDatabase.open();
   final prefs = await SharedPreferences.getInstance();
+  await markExistingUsersOnboarded(prefs, db);
   runApp(
     ProviderScope(
       overrides: [
@@ -63,7 +66,9 @@ class PixelQuestApp extends ConsumerWidget {
       locale: ref.watch(appLanguageProvider).locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const DayRolloverRefresher(child: AppShell()),
+      home: const OnboardingGate(
+        child: DayRolloverRefresher(child: AppShell()),
+      ),
     );
   }
 }

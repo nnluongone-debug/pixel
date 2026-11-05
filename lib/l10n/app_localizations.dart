@@ -2059,6 +2059,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Config'**
   String get titleConfig;
+
+  /// No description provided for @onboardingSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'SKIP'**
+  String get onboardingSkip;
+
+  /// No description provided for @onboardingNext.
+  ///
+  /// In en, this message translates to:
+  /// **'NEXT'**
+  String get onboardingNext;
+
+  /// No description provided for @onboardingStart.
+  ///
+  /// In en, this message translates to:
+  /// **'START'**
+  String get onboardingStart;
+
+  /// No description provided for @onboardingWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Build habits, pixel by pixel'**
+  String get onboardingWelcomeTitle;
+
+  /// No description provided for @onboardingWelcomeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the habits you want to keep and check them in every day.'**
+  String get onboardingWelcomeBody;
+
+  /// No description provided for @onboardingMatrixTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every check-in drops a brick'**
+  String get onboardingMatrixTitle;
+
+  /// No description provided for @onboardingMatrixBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill a full row to clear it and earn bonus XP.'**
+  String get onboardingMatrixBody;
+
+  /// No description provided for @onboardingRewardsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Level up, unlock rewards'**
+  String get onboardingRewardsTitle;
+
+  /// No description provided for @onboardingRewardsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Earn badges and unlock brick skins and sound packs in the Locker.'**
+  String get onboardingRewardsBody;
+
+  /// No description provided for @onboardingRemindersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Never miss a day'**
+  String get onboardingRemindersTitle;
+
+  /// No description provided for @onboardingRemindersBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on reminders so the app can nudge you at the right time.'**
+  String get onboardingRemindersBody;
+
+  /// No description provided for @onboardingEnableReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'ENABLE REMINDERS'**
+  String get onboardingEnableReminders;
+
+  /// No description provided for @onboardingRemindersOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders enabled'**
+  String get onboardingRemindersOn;
+
+  /// No description provided for @onboardingRemindersDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'You can turn them on later in Config'**
+  String get onboardingRemindersDenied;
+
+  /// No description provided for @configFeedbackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback & support'**
+  String get configFeedbackTitle;
+
+  /// No description provided for @configFeedbackBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Found a bug or have an idea? Tell us!'**
+  String get configFeedbackBody;
+
+  /// No description provided for @configFeedbackSend.
+  ///
+  /// In en, this message translates to:
+  /// **'SEND FEEDBACK'**
+  String get configFeedbackSend;
+
+  /// No description provided for @configReplayIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'REPLAY INTRO'**
+  String get configReplayIntro;
+
+  /// No description provided for @configAppVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version} ({build})'**
+  String configAppVersion(String version, String build);
+
+  /// No description provided for @feedbackNoMailApp.
+  ///
+  /// In en, this message translates to:
+  /// **'No email app found. Write to {email}'**
+  String feedbackNoMailApp(String email);
+
+  /// No description provided for @feedbackCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'COPY'**
+  String get feedbackCopy;
+
+  /// No description provided for @feedbackEmailSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback'**
+  String get feedbackEmailSubject;
+
+  /// No description provided for @feedbackEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the bug or idea here:'**
+  String get feedbackEmailHint;
 }
 
 class _AppLocalizationsDelegate

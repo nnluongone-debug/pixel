@@ -1192,4 +1192,82 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get titleConfig => 'Cài đặt';
+
+  @override
+  String get onboardingSkip => 'BỎ QUA';
+
+  @override
+  String get onboardingNext => 'TIẾP';
+
+  @override
+  String get onboardingStart => 'BẮT ĐẦU';
+
+  @override
+  String get onboardingWelcomeTitle => 'Xây thói quen, từng pixel một';
+
+  @override
+  String get onboardingWelcomeBody =>
+      'Thêm thói quen bạn muốn duy trì và check-in mỗi ngày.';
+
+  @override
+  String get onboardingMatrixTitle => 'Mỗi lần check-in thả một viên gạch';
+
+  @override
+  String get onboardingMatrixBody =>
+      'Lấp đầy một hàng để xoá hàng và nhận thêm XP.';
+
+  @override
+  String get onboardingRewardsTitle => 'Lên cấp, mở khoá phần thưởng';
+
+  @override
+  String get onboardingRewardsBody =>
+      'Nhận huy hiệu, mở khoá skin gạch và gói âm thanh trong Locker.';
+
+  @override
+  String get onboardingRemindersTitle => 'Không bỏ lỡ ngày nào';
+
+  @override
+  String get onboardingRemindersBody =>
+      'Bật nhắc nhở để ứng dụng nhắc bạn đúng giờ.';
+
+  @override
+  String get onboardingEnableReminders => 'BẬT NHẮC NHỞ';
+
+  @override
+  String get onboardingRemindersOn => 'Đã bật nhắc nhở';
+
+  @override
+  String get onboardingRemindersDenied => 'Bạn có thể bật sau trong Cài đặt';
+
+  @override
+  String get configFeedbackTitle => 'Góp ý & hỗ trợ';
+
+  @override
+  String get configFeedbackBody =>
+      'Gặp lỗi hoặc có ý tưởng? Hãy cho chúng tôi biết!';
+
+  @override
+  String get configFeedbackSend => 'GỬI GÓP Ý';
+
+  @override
+  String get configReplayIntro => 'XEM LẠI HƯỚNG DẪN';
+
+  @override
+  String configAppVersion(String version, String build) {
+    return 'Phiên bản $version ($build)';
+  }
+
+  @override
+  String feedbackNoMailApp(String email) {
+    return 'Không tìm thấy ứng dụng email. Hãy gửi tới $email';
+  }
+
+  @override
+  String get feedbackCopy => 'SAO CHÉP';
+
+  @override
+  String get feedbackEmailSubject => 'Góp ý';
+
+  @override
+  String get feedbackEmailHint => 'Mô tả lỗi hoặc ý tưởng tại đây:';
 }

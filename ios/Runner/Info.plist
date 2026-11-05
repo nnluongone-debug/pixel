@@ -82,5 +82,9 @@
 	<!-- home_widget owns the pixelquest:// scheme; keep Flutter's router out. -->
 	<key>FlutterDeepLinkingEnabled</key>
 	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>mailto</string>
+	</array>
 </dict>
 </plist>
