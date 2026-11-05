@@ -14,7 +14,10 @@ Habit habit({
   int target = 20,
   String unit = 'PG',
   HabitSchedule schedule = HabitSchedule.daily,
-  int? reminder = 510,
+  List<int> reminders = const [510],
+  int? every,
+  int from = 480,
+  int to = 1320,
 }) => Habit(
   id: id,
   name: 'Read',
@@ -26,13 +29,16 @@ Habit habit({
   createdAt: DateTime(2026, 1, 1),
   unit: unit,
   schedule: schedule,
-  reminderMinutes: reminder,
+  reminderTimes: reminders,
+  reminderEvery: every,
+  reminderFrom: from,
+  reminderTo: to,
 );
 
 void main() {
   group('buildReminderPlan', () {
     test('skips habits without reminder', () {
-      expect(buildReminderPlan([habit(reminder: null)], en), isEmpty);
+      expect(buildReminderPlan([habit(reminders: const [])], en), isEmpty);
     });
 
     test('daily schedule yields one daily entry', () {
@@ -99,6 +105,86 @@ void main() {
       expect(
         buildReminderPlan([habit()], en),
         isNot(buildReminderPlan([habit()], vi)),
+      );
+    });
+
+    test('one entry per time and due weekday with unique ids', () {
+      final plan = buildReminderPlan([
+        habit(id: 'a', reminders: const [480, 720, 1230]),
+        habit(
+          id: 'b',
+          schedule: HabitSchedule.weekdays,
+          reminders: const [600, 1200],
+        ),
+      ], en);
+      expect(plan, hasLength(3 + 2 * 5));
+      expect(plan.map((e) => e.id).toSet(), hasLength(plan.length));
+      expect(plan.where((e) => e.habitId == 'a').map((e) => e.minutes), [
+        480,
+        720,
+        1230,
+      ]);
+    });
+
+    test('max times on a custom week stays unique and cap applies', () {
+      final plan = buildReminderPlan([
+        for (var i = 0; i < 3; i++)
+          habit(
+            id: 'h$i',
+            schedule: HabitSchedule.fromWeekdays([1, 2, 3, 4, 5, 6]),
+            reminders: const [60, 120, 180, 240, 300],
+          ),
+      ], en);
+      expect(plan, hasLength(90));
+      expect(plan.map((e) => e.id).toSet(), hasLength(90));
+      expect(
+        capReminderPlan(plan, DateTime(2026, 10, 10, 9)),
+        hasLength(maxPendingReminders),
+      );
+    });
+
+    test('repeat habit expands the window into slots', () {
+      final plan = buildReminderPlan([
+        habit(reminders: const [], every: 120, from: 480, to: 720),
+      ], en);
+      expect(plan.map((e) => e.minutes), [480, 600, 720]);
+      expect(plan.every((e) => e.weekday == null), isTrue);
+    });
+
+    test('repeat habit on weekdays gets one entry per slot and day', () {
+      final plan = buildReminderPlan([
+        habit(
+          schedule: HabitSchedule.weekdays,
+          reminders: const [],
+          every: 60,
+          from: 480,
+          to: 600,
+        ),
+      ], en);
+      expect(plan, hasLength(3 * 5));
+      expect(plan.map((e) => e.id).toSet(), hasLength(15));
+    });
+
+    test('invalid window yields no entries', () {
+      expect(
+        buildReminderPlan([
+          habit(reminders: const [], every: 60, from: 600, to: 480),
+        ], en),
+        isEmpty,
+      );
+    });
+
+    test('15-minute all-day repeat has unique ids and is capped', () {
+      final plan = buildReminderPlan([
+        habit(id: 'a', reminders: const [], every: 15, from: 0, to: 1439),
+        habit(id: 'b', reminders: const [], every: 15, from: 0, to: 1439),
+      ], en);
+      expect(plan, hasLength(192));
+      expect(plan.map((e) => e.id).toSet(), hasLength(192));
+      expect(plan.every((e) => e.id < 1 << 31), isTrue);
+      expect(
+        capReminderPlan(plan, DateTime(2026, 10, 10, 9)),
+        hasLength(maxPendingReminders),
       );
     });
 

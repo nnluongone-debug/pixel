@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/letter_avatar_color.dart';
 
 /// Square pixel-framed tile showing the player's initials.
 class ProfileAvatar extends StatelessWidget {
@@ -23,20 +24,19 @@ class ProfileAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const size = 72.0;
+    final text = initials(name, email);
+    final color = LetterAvatarColor.of(text);
     return Container(
       width: size,
       height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: AppColors.mint.withValues(alpha: 0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: AppColors.mint, width: 2),
-        boxShadow: AppGlow.strong(AppColors.mint),
+        border: Border.all(color: color, width: 2),
+        boxShadow: AppGlow.strong(color),
       ),
-      child: Text(
-        initials(name, email),
-        style: AppTextStyles.headlineLg.copyWith(color: AppColors.primary),
-      ),
+      child: Text(text, style: AppTextStyles.headlineLg.copyWith(color: color)),
     );
   }
 }

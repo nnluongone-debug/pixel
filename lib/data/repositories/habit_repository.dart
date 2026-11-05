@@ -37,7 +37,10 @@ class HabitRepository {
     required String iconName,
     String unit = '',
     HabitSchedule schedule = HabitSchedule.daily,
-    int? reminderMinutes,
+    List<int>? reminderTimes,
+    int? reminderEvery,
+    int reminderFrom = Habit.defaultReminderFrom,
+    int reminderTo = Habit.defaultReminderTo,
   }) async {
     final now = _clock();
     final habit = Habit(
@@ -50,7 +53,10 @@ class HabitRepository {
       iconName: iconName,
       unit: unit.trim().toUpperCase(),
       schedule: _validSchedule(schedule),
-      reminderMinutes: _validReminder(reminderMinutes),
+      reminderTimes: _validReminders(reminderTimes ?? const []),
+      reminderEvery: _validEvery(reminderEvery),
+      reminderFrom: _validMinute(reminderFrom, 'reminderFrom'),
+      reminderTo: _validWindowEnd(reminderFrom, reminderTo),
       createdAt: now,
       progressDate: DateKeys.fromDate(now),
     );
@@ -87,7 +93,10 @@ class HabitRepository {
         iconName: habit.iconName,
         unit: habit.unit.trim().toUpperCase(),
         schedule: _validSchedule(habit.schedule),
-        reminderMinutes: _validReminder(habit.reminderMinutes),
+        reminderTimes: _validReminders(habit.reminderTimes),
+        reminderEvery: _validEvery(habit.reminderEvery),
+        reminderFrom: _validMinute(habit.reminderFrom, 'reminderFrom'),
+        reminderTo: _validWindowEnd(habit.reminderFrom, habit.reminderTo),
       );
       await txn.update(
         _table,
@@ -99,7 +108,10 @@ class HabitRepository {
           'icon_name': edited.iconName,
           'unit': edited.unit,
           'schedule_days': edited.schedule.mask,
-          'reminder_minutes': edited.reminderMinutes,
+          'reminder_times': Habit.encodeTimes(edited.reminderTimes),
+          'reminder_every': edited.reminderEvery,
+          'reminder_from': edited.reminderFrom,
+          'reminder_to': edited.reminderTo,
           'updated_at': now.millisecondsSinceEpoch,
         },
         where: 'id = ?',
@@ -287,11 +299,48 @@ class HabitRepository {
     return schedule;
   }
 
-  int? _validReminder(int? minutes) {
-    if (minutes != null && (minutes < 0 || minutes >= 24 * 60)) {
-      throw ArgumentError.value(minutes, 'reminderMinutes', 'Must be 0-1439');
+  int? _validEvery(int? every) {
+    if (every != null && !Habit.reminderEveryChoices.contains(every)) {
+      throw ArgumentError.value(
+        every,
+        'reminderEvery',
+        'Must be one of ${Habit.reminderEveryChoices}',
+      );
     }
-    return minutes;
+    return every;
+  }
+
+  int _validMinute(int minute, String name) {
+    if (minute < 0 || minute >= 24 * 60) {
+      throw ArgumentError.value(minute, name, 'Must be 0-1439');
+    }
+    return minute;
+  }
+
+  int _validWindowEnd(int from, int to) {
+    _validMinute(to, 'reminderTo');
+    if (to <= from) {
+      throw ArgumentError.value(to, 'reminderTo', 'Must be after the start');
+    }
+    return to;
+  }
+
+  /// Sorted, de-duplicated, each 0..1439, at most [Habit.maxReminderTimes].
+  List<int> _validReminders(List<int> times) {
+    final unique = times.toSet().toList()..sort();
+    if (unique.length > Habit.maxReminderTimes) {
+      throw ArgumentError.value(
+        times.length,
+        'reminderTimes',
+        'At most ${Habit.maxReminderTimes} times',
+      );
+    }
+    for (final m in unique) {
+      if (m < 0 || m >= 24 * 60) {
+        throw ArgumentError.value(m, 'reminderTimes', 'Must be 0-1439');
+      }
+    }
+    return List.unmodifiable(unique);
   }
 
   int _validTarget(int target) {

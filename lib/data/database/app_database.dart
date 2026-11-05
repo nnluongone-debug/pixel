@@ -6,7 +6,7 @@ import '../models/user_stats.dart';
 /// Opens the local SQLite database and owns the schema.
 abstract final class AppDatabase {
   static const String fileName = 'pixel_quest.db';
-  static const int schemaVersion = 5;
+  static const int schemaVersion = 7;
 
   /// Opens (and creates on first run) the database.
   ///
@@ -57,6 +57,27 @@ abstract final class AppDatabase {
         'DEFAULT 0',
       );
     }
+    if (from < 6) {
+      // Multi-time reminders; `reminder_minutes` stays as an unused legacy
+      // column (SQLite can't drop it cheaply).
+      await db.execute(
+        "ALTER TABLE habits ADD COLUMN reminder_times TEXT NOT NULL DEFAULT ''",
+      );
+      await db.execute(
+        'UPDATE habits SET reminder_times = CAST(reminder_minutes AS TEXT) '
+        'WHERE reminder_minutes IS NOT NULL',
+      );
+    }
+    if (from < 7) {
+      // "Every N minutes" reminders within a daily window.
+      for (final column in const [
+        'reminder_every INTEGER',
+        'reminder_from INTEGER NOT NULL DEFAULT 480',
+        'reminder_to INTEGER NOT NULL DEFAULT 1320',
+      ]) {
+        await db.execute('ALTER TABLE habits ADD COLUMN $column');
+      }
+    }
   }
 
   /// Local changes waiting to be uploaded; one row per synced entity.
@@ -90,6 +111,10 @@ abstract final class AppDatabase {
           CHECK (schedule_days BETWEEN 1 AND 127),
         reminder_minutes INTEGER
           CHECK (reminder_minutes BETWEEN 0 AND 1439),
+        reminder_times TEXT NOT NULL DEFAULT '',
+        reminder_every INTEGER CHECK (reminder_every BETWEEN 5 AND 720),
+        reminder_from INTEGER NOT NULL DEFAULT 480,
+        reminder_to INTEGER NOT NULL DEFAULT 1320,
         created_at TEXT NOT NULL,
         progress_date TEXT,
         updated_at INTEGER NOT NULL DEFAULT 0

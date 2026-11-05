@@ -9,7 +9,200 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
-  String get appTitle => 'Pixel Quest';
+  String get appTitle => 'Habit Tracker - Pixel';
+
+  @override
+  String get editorModeTimes => 'GIỜ CỤ THỂ';
+
+  @override
+  String get editorModeRepeat => 'LẶP LẠI';
+
+  @override
+  String get editorEvery => 'MỖI';
+
+  @override
+  String get editorFrom => 'TỪ';
+
+  @override
+  String get editorTo => 'ĐẾN';
+
+  @override
+  String editorEveryMinutes(int count) {
+    return '${count}p';
+  }
+
+  @override
+  String editorRepeatSummary(int count, String first, String last) {
+    return '≈ $count lời nhắc mỗi ngày ($first → $last)';
+  }
+
+  @override
+  String get editorErrWindow => 'Giờ kết thúc phải sau giờ bắt đầu';
+
+  @override
+  String configEveryRow(String interval, String from, String to) {
+    return 'mỗi $interval · $from–$to';
+  }
+
+  @override
+  String configSummary(int count, String when) {
+    return 'Đã lên lịch $count lời nhắc, tiếp theo lúc $when';
+  }
+
+  @override
+  String get configSummaryNone => 'Chưa có lời nhắc nào được lên lịch';
+
+  @override
+  String get editorAddTime => '+ THÊM GIỜ';
+
+  @override
+  String editorRemoveTime(String time) {
+    return 'Xóa $time';
+  }
+
+  @override
+  String get lockerTitle => 'BỘ GẠCH';
+
+  @override
+  String get lockerVaultTag => 'KHO';
+
+  @override
+  String get lockerActiveSkin => 'GIAO DIỆN ĐANG DÙNG';
+
+  @override
+  String lockerCollection(int count) {
+    return 'BỘ SƯU TẬP ($count CẤP)';
+  }
+
+  @override
+  String lockerTierLine(int tier, String rarity) {
+    return 'CẤP $tier • $rarity';
+  }
+
+  @override
+  String get lockerRarityCommon => 'PHỔ THÔNG';
+
+  @override
+  String get lockerRarityRare => 'HIẾM';
+
+  @override
+  String get lockerRarityEpic => 'SỬ THI';
+
+  @override
+  String get lockerRarityLegendary => 'HUYỀN THOẠI';
+
+  @override
+  String get lockerRarityMythic => 'THẦN THOẠI';
+
+  @override
+  String get lockerRarityCosmic => 'VŨ TRỤ';
+
+  @override
+  String get lockerUnlockedMark => 'ĐÃ MỞ';
+
+  @override
+  String get lockerThemeGameBoy => 'Game Boy DMG-01';
+
+  @override
+  String get lockerThemeNeonGlow => 'Arcade Neon Glow';
+
+  @override
+  String get lockerThemeCyberpunk => 'Cyber Glitch & CRT';
+
+  @override
+  String get lockerThemeGemstone => 'Pixel Gemstones';
+
+  @override
+  String get lockerThemePureGold => 'Gold Relic & Obsidian';
+
+  @override
+  String get lockerThemeNebula => 'Starlight Nebula';
+
+  @override
+  String get lockerEquip => 'DÙNG';
+
+  @override
+  String get lockerActive => 'ĐANG DÙNG';
+
+  @override
+  String lockerStreakProgress(int current, int goal) {
+    return '$current/$goal N';
+  }
+
+  @override
+  String lockerLevelChip(int level) {
+    return 'LV $level';
+  }
+
+  @override
+  String get lockerPro => 'PRO';
+
+  @override
+  String lockerReqStreak(int days) {
+    return 'Cần chuỗi $days ngày';
+  }
+
+  @override
+  String lockerReqLevel(int level) {
+    return 'Cần cấp anh hùng $level';
+  }
+
+  @override
+  String lockerReqLevelOrStreak(int level, int days) {
+    return 'Cần cấp $level hoặc chuỗi $days ngày';
+  }
+
+  @override
+  String get lockerComingSoon => 'SẮP RA MẮT';
+
+  @override
+  String lockerEntrySubtitle(int unlocked, int total) {
+    return 'ĐÃ MỞ $unlocked/$total · GIAO DIỆN & ÂM THANH';
+  }
+
+  @override
+  String get lockerNewTheme => 'GIAO DIỆN MỚI!';
+
+  @override
+  String get lockerEquipNow => 'DÙNG NGAY';
+
+  @override
+  String get lockerLater => 'ĐỂ SAU';
+
+  @override
+  String get soundCardTitle => 'SOUND / ÂM THANH';
+
+  @override
+  String get soundEnabled => 'Hiệu ứng âm thanh';
+
+  @override
+  String get soundVolume => 'Âm lượng';
+
+  @override
+  String soundPackLabel(String name) {
+    return 'Bộ âm thanh: $name';
+  }
+
+  @override
+  String get soundPreview => '▶ NGHE THỬ';
+
+  @override
+  String get soundPackChiptune => 'Chiptune 4-bit';
+
+  @override
+  String get soundPackSynthPop => 'Synth Pop 8-bit & Xu';
+
+  @override
+  String get soundPackLaserDrop => 'Laser rơi';
+
+  @override
+  String get soundPackCrystalChime => 'Chuông pha lê';
+
+  @override
+  String get soundPackCoinCascade => 'Thác xu vàng';
+
+  @override
+  String get soundPackCosmicWarp => 'Không gian vũ trụ';
 
   @override
   String get configDemoTitle => 'DEMO // MA TRẬN LOVE';
@@ -26,7 +219,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get configDemoConfirmBody =>
-      'Toàn bộ thói quen, gạch và XP trên máy này sẽ được thay bằng 25 thói quen mẫu. Không thể hoàn tác.';
+      'Toàn bộ thói quen, gạch và XP trên máy này sẽ được thay bằng 12 thói quen mẫu. Không thể hoàn tác.';
 
   @override
   String get configDemoConfirm => 'THAY THẾ';
@@ -273,6 +466,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get accountSignOutAnyway => 'VẪN ĐĂNG XUẤT';
+
+  @override
+  String get accountDelete => 'XÓA TÀI KHOẢN';
+
+  @override
+  String get accountDeleteTitle => 'XÓA TÀI KHOẢN?';
+
+  @override
+  String get accountDeleteBody =>
+      'Tài khoản, hồ sơ, thói quen, gạch và XP sẽ bị xóa vĩnh viễn khỏi máy chủ và thiết bị này. Không thể hoàn tác.';
+
+  @override
+  String get accountDeleteConfirm => 'XÓA VĨNH VIỄN';
+
+  @override
+  String get accountDeleteOffline => 'Cần kết nối internet để xóa tài khoản.';
 
   @override
   String get accountCancel => 'HỦY';
@@ -604,53 +813,22 @@ class AppLocalizationsVi extends AppLocalizations {
   String get editorTitleHint => 'Đọc 20 trang sách';
 
   @override
+  String get editorTemplatesLabel => 'GỢI Ý MẪU · CHẠM ĐỂ ĐIỀN SẴN';
+
+  @override
+  String get tasksSwipeHint => 'Vuốt sang trái để xóa thói quen';
+
+  @override
+  String get editorIconsMore => 'Thêm biểu tượng';
+
+  @override
+  String get editorIconsLess => 'Thu gọn biểu tượng';
+
+  @override
+  String get detailNotFound => 'Thói quen này không còn tồn tại.';
+
+  @override
   String get editorClearTitle => 'Xóa tên';
-
-  @override
-  String editorArchetype(String name) {
-    return 'HỆ: $name';
-  }
-
-  @override
-  String get editorArchScholar => 'HỌC GIẢ';
-
-  @override
-  String get editorArchScholarFlavor => 'Trí tuệ, từng ô một';
-
-  @override
-  String get editorArchWarrior => 'CHIẾN BINH';
-
-  @override
-  String get editorArchWarriorFlavor => 'Sức mạnh, tích lũy mỗi ngày';
-
-  @override
-  String get editorArchHydro => 'THỦY';
-
-  @override
-  String get editorArchHydroFlavor => 'Dòng chảy, từng ly một';
-
-  @override
-  String get editorArchMonk => 'THIỀN SƯ';
-
-  @override
-  String get editorArchMonkFlavor => 'Bình tĩnh cũng là một chuỗi';
-
-  @override
-  String get editorArchHacker => 'HACKER';
-
-  @override
-  String get editorArchHackerFlavor => 'Mỗi ngày làm xong một chút';
-
-  @override
-  String get editorArchStriker => 'XẠ THỦ';
-
-  @override
-  String get editorArchStrikerFlavor => 'Ngắm, bắn, lặp lại';
-
-  @override
-  String editorStreakBonus(int xp, int max) {
-    return '+$xp XP mỗi ngày chuỗi (tối đa +$max)';
-  }
 
   @override
   String get editorIconMatrix => 'CHỌN BIỂU TƯỢNG';
@@ -668,20 +846,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String editorColorSemantics(String hex) {
     return 'Màu $hex';
   }
-
-  @override
-  String get editorTBlock => 'KHỐI CHỮ T';
-
-  @override
-  String get editorActive => 'ĐANG DÙNG';
-
-  @override
-  String editorXpPerTile(int xp) {
-    return '+$xp XP / Ô';
-  }
-
-  @override
-  String get editorField => 'LƯỚI 10×15';
 
   @override
   String get editorCadenceTag => '03 // LỊCH';
@@ -777,10 +941,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get configAllow => 'CHO PHÉP';
 
   @override
-  String get configSendTest => 'GỬI THÔNG BÁO THỬ';
-
-  @override
-  String get configScheduled => 'LỊCH NHẮC';
+  String configScheduledCount(int count) {
+    return '$count THÓI QUEN';
+  }
 
   @override
   String get configNoReminders =>
@@ -789,12 +952,6 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get configBlocked =>
       'Thông báo đang bị chặn. Hãy bật trong cài đặt hệ thống.';
-
-  @override
-  String get configAllowFirst => 'Hãy cho phép thông báo trước.';
-
-  @override
-  String get configTestFailed => 'Không thể gửi thông báo.';
 
   @override
   String get configLanguage => 'LANGUAGE / NGÔN NGỮ';
@@ -818,9 +975,6 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get reminderTest => 'Thông báo thử — nhắc nhở đang hoạt động.';
-
-  @override
   String gridHudYear(int year) {
     return 'NĂM $year';
   }
@@ -841,7 +995,9 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get gridMatrixTitle => 'LƯỚI MA TRẬN • 10x15';
+  String gridMatrixTitle(int rows) {
+    return 'LƯỚI MA TRẬN • 10x$rows';
+  }
 
   @override
   String gridMatrixCleared(int percent) {
@@ -985,6 +1141,19 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get commonCancel => 'HỦY';
+
+  @override
+  String get commonNew => 'MỚI';
+
+  @override
+  String unlockToastBadges(int count) {
+    return '🏅 Bạn vừa mở $count huy hiệu mới! Xem ở Thống kê.';
+  }
+
+  @override
+  String unlockToastThemes(int count) {
+    return '🎨 Bạn vừa mở $count giao diện gạch mới! Xem ở Cấu hình → Kho.';
+  }
 
   @override
   String get commonDelete => 'XÓA';

@@ -39,6 +39,15 @@ abstract final class XpRules {
   static int targetXpForLevel(int level) =>
       firstLevelTargetXp + (level - 1) * targetXpGrowthPerLevel;
 
+  /// Lifetime XP needed to reach [level] (level 1 needs 0).
+  static int totalXpForLevel(int level) {
+    var total = 0;
+    for (var l = 1; l < level; l++) {
+      total += targetXpForLevel(l);
+    }
+    return total;
+  }
+
   /// Converts lifetime XP into level + XP inside that level.
   static UserStats statsFromTotalXp(int totalXp, {required int streakDays}) {
     var level = 1;

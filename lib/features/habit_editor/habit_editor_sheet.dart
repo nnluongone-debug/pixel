@@ -51,12 +51,12 @@ class _HabitEditorBodyState extends ConsumerState<_HabitEditorBody> {
         HabitDraftError.titleEmpty => l10n.editorErrTitleEmpty,
         HabitDraftError.noDays => l10n.editorErrNoDays,
         HabitDraftError.quota => l10n.editorErrQuota,
+        HabitDraftError.window => l10n.editorErrWindow,
       };
   Color get _color => AppColors.fromHex(_draft.colorHex);
 
   void _update(HabitDraft draft) => setState(() {
-    final turnedOn =
-        draft.reminderMinutes != null && _draft.reminderMinutes == null;
+    final turnedOn = draft.remindersOn && !_draft.remindersOn;
     _draft = draft;
     _nameError = null;
     _formError = null;
@@ -99,7 +99,10 @@ class _HabitEditorBodyState extends ConsumerState<_HabitEditorBody> {
           iconName: d.iconName,
           unit: d.type == HabitType.counter ? d.unit : '',
           schedule: d.schedule,
-          reminderMinutes: d.reminderMinutes,
+          reminderTimes: d.savedTimes,
+          reminderEvery: d.savedEvery,
+          reminderFrom: d.reminderFrom,
+          reminderTo: d.reminderTo,
         );
       } else {
         await controller.edit(
@@ -111,7 +114,10 @@ class _HabitEditorBodyState extends ConsumerState<_HabitEditorBody> {
             iconName: d.iconName,
             unit: d.type == HabitType.counter ? d.unit : '',
             schedule: d.schedule,
-            reminderMinutes: d.reminderMinutes,
+            reminderTimes: d.savedTimes,
+            reminderEvery: d.savedEvery,
+            reminderFrom: d.reminderFrom,
+            reminderTo: d.reminderTo,
           ),
         );
       }
@@ -168,12 +174,7 @@ class _HabitEditorBodyState extends ConsumerState<_HabitEditorBody> {
               HabitEditorHeader(isEditing: _isEditing),
               Expanded(
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.fromLTRB(
-                    16,
-                    12,
-                    16,
-                    24 + media.padding.bottom,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   child: Column(
@@ -187,6 +188,14 @@ class _HabitEditorBodyState extends ConsumerState<_HabitEditorBody> {
                         onNameChanged: (v) => _update(_draft.copyWith(name: v)),
                         onIconChanged: (v) =>
                             _update(_draft.copyWith(iconName: v)),
+                        onTemplatePicked: _isEditing
+                            ? null
+                            : (t) => _update(
+                                _draft.withTemplate(
+                                  t,
+                                  Localizations.localeOf(context).languageCode,
+                                ),
+                              ),
                       ),
                       const SizedBox(height: 24),
                       MetaphorSection(
@@ -203,21 +212,22 @@ class _HabitEditorBodyState extends ConsumerState<_HabitEditorBody> {
                       ),
                       const SizedBox(height: 24),
                       AlertsSection(
-                        reminderMinutes: _draft.reminderMinutes,
+                        draft: _draft,
                         color: _color,
-                        onChanged: (m) =>
-                            _update(_draft.copyWith(reminderMinutes: m)),
-                      ),
-                      const SizedBox(height: 24),
-                      _SaveButton(
-                        isEditing: _isEditing,
-                        saving: _saving,
-                        error: _formError,
-                        onPressed: _submit,
+                        onChanged: _update,
                       ),
                     ],
                   ),
                 ),
+              ),
+              _SaveBar(
+                isEditing: _isEditing,
+                saving: _saving,
+                error: _formError,
+                bottomInset: media.viewInsets.bottom > 0
+                    ? 0
+                    : media.padding.bottom,
+                onPressed: _submit,
               ),
             ],
           ),
@@ -227,62 +237,73 @@ class _HabitEditorBodyState extends ConsumerState<_HabitEditorBody> {
   }
 }
 
-class _SaveButton extends StatelessWidget {
-  const _SaveButton({
+/// Footer pinned below the scrolling form so the CTA is always reachable.
+class _SaveBar extends StatelessWidget {
+  const _SaveBar({
     required this.isEditing,
     required this.saving,
     required this.error,
+    required this.bottomInset,
     required this.onPressed,
   });
 
   final bool isEditing;
   final bool saving;
   final String? error;
+  final double bottomInset;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          width: double.infinity,
-          height: 56,
-          child: FilledButton(
-            onPressed: saving ? null : onPressed,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Text(
-                    isEditing
-                        ? context.l10n.editorSaveChanges
-                        : context.l10n.editorCreate,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.headlineSm.copyWith(
-                      color: AppColors.textOnNeon,
+    return Container(
+      padding: EdgeInsets.fromLTRB(16, 10, 16, 10 + bottomInset),
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: AppColors.borderSubtle)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: FilledButton(
+              onPressed: saving ? null : onPressed,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Text(
+                      isEditing
+                          ? context.l10n.editorSaveChanges
+                          : context.l10n.editorCreate,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.headlineSm.copyWith(
+                        color: AppColors.textOnNeon,
+                      ),
                     ),
                   ),
-                ),
-                if (!isEditing) ...[
-                  const SizedBox(width: 6),
-                  const Icon(Icons.bolt_rounded, color: AppColors.textOnNeon),
+                  if (!isEditing) ...[
+                    const SizedBox(width: 6),
+                    const Icon(Icons.bolt_rounded, color: AppColors.textOnNeon),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          error ??
-              (isEditing
-                  ? context.l10n.editorEditHint
-                  : context.l10n.editorCreateHint),
-          textAlign: TextAlign.center,
-          style: AppTextStyles.labelSm.copyWith(
-            color: error == null ? AppColors.textMuted : AppColors.error,
+          const SizedBox(height: 8),
+          Text(
+            error ??
+                (isEditing
+                    ? context.l10n.editorEditHint
+                    : context.l10n.editorCreateHint),
+            textAlign: TextAlign.center,
+            style: AppTextStyles.labelSm.copyWith(
+              color: error == null ? AppColors.textMuted : AppColors.error,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

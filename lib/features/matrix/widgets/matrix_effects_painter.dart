@@ -3,16 +3,22 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
 
-import 'brick_painter.dart';
+import '../skins/brick_skin.dart';
 import 'drop_effect.dart';
 import 'matrix_layout.dart';
 
 /// Animated layer: falling bricks, landing squash/flash and sparkles.
 /// Repaints every frame only while at least one effect is running.
 class MatrixEffectsPainter extends CustomPainter {
-  MatrixEffectsPainter({required this.geometry, required this.effects})
-    : super(repaint: Listenable.merge([for (final e in effects) e.controller]));
+  MatrixEffectsPainter({
+    required this.skin,
+    required this.geometry,
+    required this.effects,
+  }) : super(
+         repaint: Listenable.merge([for (final e in effects) e.controller]),
+       );
 
+  final BrickSkin skin;
   final MatrixGeometry geometry;
   final List<DropEffect> effects;
 
@@ -50,14 +56,14 @@ class MatrixEffectsPainter extends CustomPainter {
     final opacity = (t / 0.25).clamp(0.0, 1.0);
 
     final trailOffset = geometry.cellHeight * 0.6 * t;
-    BrickPainter.paintBrick(
+    skin.paintBrick(
       c,
       rect.shift(Offset(0, -trailOffset)),
       color,
       opacity: 0.18 * opacity,
       glow: 0,
     );
-    BrickPainter.paintBrick(c, rect, color, opacity: opacity, glow: 0.7);
+    skin.paintBrick(c, rect, color, opacity: opacity, glow: 0.7);
   }
 
   /// Bottom-anchored squash on impact, then a fading glow flash.
@@ -69,7 +75,7 @@ class MatrixEffectsPainter extends CustomPainter {
       target.right + target.width * squash * 0.25,
       target.bottom,
     );
-    BrickPainter.paintBrick(c, rect, color, glow: 1 + 1.6 * (1 - u));
+    skin.paintBrick(c, rect, color, glow: 1 + 1.6 * (1 - u));
   }
 
   void _paintSparkles(
@@ -105,5 +111,7 @@ class MatrixEffectsPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(MatrixEffectsPainter old) =>
-      old.effects != effects || old.geometry.width != geometry.width;
+      old.skin != skin ||
+      old.effects != effects ||
+      old.geometry.width != geometry.width;
 }

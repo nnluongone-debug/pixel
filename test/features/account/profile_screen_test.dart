@@ -82,7 +82,7 @@ void main() {
     expect(find.text('1/2'), findsOneWidget);
     expect(find.text('FIRST BLOCK'), findsOneWidget);
     expect(find.text('BRICK LAYER'), findsNothing);
-    expect(find.textContaining('UNLOCKED'), findsOneWidget);
+    expect(find.textContaining('UNLOCKED OCT'), findsOneWidget);
   });
 
   testWidgets('shows an empty state when no badge is unlocked', (tester) async {

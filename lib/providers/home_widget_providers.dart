@@ -9,6 +9,7 @@ import '../data/models/habit.dart';
 import '../services/home_widget_snapshot.dart';
 import '../services/home_widget_sync_service.dart';
 import '../core/l10n/l10n_labels.dart';
+import 'cosmetics_providers.dart';
 import 'habit_providers.dart';
 import 'locale_providers.dart';
 import 'repository_providers.dart';
@@ -40,6 +41,7 @@ final homeWidgetSyncProvider = Provider<void>((ref) {
     if (next.hasValue) schedule();
   });
   ref.listen(effectiveLocaleProvider, (_, _) => schedule());
+  ref.listen(equippedThemeProvider, (_, _) => schedule());
   schedule();
 
   final clicks = HomeWidget.widgetClicked.listen(
@@ -81,6 +83,7 @@ Future<void> _pushSnapshot(Ref ref) async {
             stats: stats,
             habitStreaks: streaks,
             lang: ref.read(effectiveLocaleProvider).languageCode,
+            skin: ref.read(equippedThemeProvider).name,
             unitLabel: ref.read(appStringsProvider).unitLabel,
           ),
         );

@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../core/theme/app_theme.dart';
+import '../core/widgets/new_unlock_marks.dart';
 
 /// One tab in the floating pill bar.
 class NeoNavItem {
-  const NeoNavItem(this.icon, this.label);
+  const NeoNavItem(this.icon, this.label, {this.dot = false});
 
   final IconData icon;
   final String label;
+
+  /// Shows a small "something new" dot on the icon.
+  final bool dot;
 }
 
 /// Floating pill tab bar with a raised mint "+" in the middle, per the
@@ -119,7 +123,14 @@ class _NavTab extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(item.icon, color: color, size: 24),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Icon(item.icon, color: color, size: 24),
+              if (item.dot)
+                const Positioned(right: -3, top: -2, child: NewDot()),
+            ],
+          ),
           const SizedBox(height: 3),
           // Fixed line box: Vietnamese diacritics and fallback fonts must not
           // grow the label and push the bar out of the pill.

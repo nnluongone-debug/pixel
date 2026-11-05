@@ -1,27 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../domain/cosmetics/theme_catalog.dart';
+import '../../../providers/cosmetics_providers.dart';
+import '../../matrix/skins/brick_skin.dart';
+import '../../matrix/skins/skin_brick_painter.dart';
 
 /// Rounded square with the habit icon on a tinted, outlined background.
 class HabitIconBox extends StatelessWidget {
-  const HabitIconBox({super.key, required this.icon, required this.color});
+  const HabitIconBox({
+    super.key,
+    required this.icon,
+    required this.color,
+    this.size = 40,
+  });
 
   final IconData icon;
   final Color color;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 40,
-      height: 40,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         color: AppColors.surfaceHigh,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(size / 4),
         border: Border.all(color: color.withValues(alpha: 0.4)),
         boxShadow: AppGlow.soft(color),
       ),
-      child: Icon(icon, color: color, size: 22),
+      child: Icon(icon, color: color, size: size * 0.55),
     );
   }
 }
@@ -62,7 +73,7 @@ class HabitBadge extends StatelessWidget {
 }
 
 /// Row of pixel segments. A segment that just became filled pops.
-class MiniPixelBar extends StatelessWidget {
+class MiniPixelBar extends ConsumerWidget {
   const MiniPixelBar({
     super.key,
     required this.segments,
@@ -75,7 +86,9 @@ class MiniPixelBar extends StatelessWidget {
   final Color color;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final skinId = ref.watch(equippedThemeProvider);
+    final skin = BrickSkin.of(skinId);
     return Row(
       children: [
         for (var i = 0; i < segments; i++) ...[
@@ -92,22 +105,32 @@ class MiniPixelBar extends StatelessWidget {
                 curve: Curves.elasticOut,
                 builder: (context, scale, child) =>
                     Transform.scale(scale: scale, child: child),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: i < filled ? color : AppColors.surfaceHigh,
-                    borderRadius: BorderRadius.circular(2),
-                    border: i < filled
-                        ? null
-                        : Border.all(
-                            color: AppColors.outlineVariant.withValues(
-                              alpha: 0.3,
-                            ),
+                child: skinId == ThemeId.neonGlow
+                    ? AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: i < filled ? color : AppColors.surfaceHigh,
+                          borderRadius: BorderRadius.circular(2),
+                          border: i < filled
+                              ? null
+                              : Border.all(
+                                  color: AppColors.outlineVariant.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                ),
+                          boxShadow: i < filled ? AppGlow.cell(color) : null,
+                        ),
+                      )
+                    : SizedBox(
+                        height: 8,
+                        child: CustomPaint(
+                          painter: SkinBrickPainter(
+                            skin: skin,
+                            color: i < filled ? color : null,
                           ),
-                    boxShadow: i < filled ? AppGlow.cell(color) : null,
-                  ),
-                ),
+                        ),
+                      ),
               ),
             ),
           ),

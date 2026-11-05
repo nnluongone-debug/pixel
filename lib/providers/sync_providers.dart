@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/sync/sync_service.dart';
 import 'account_providers.dart';
 import 'habit_providers.dart';
+import 'new_unlocks_provider.dart';
 import 'locale_providers.dart';
 import 'repository_providers.dart';
 
@@ -150,8 +151,34 @@ class SyncController extends Notifier<SyncStatus> {
       }
       await auth.signOut();
       await service?.wipeLocal();
+      ref.invalidate(newUnlocksProvider);
       habits.refreshAll();
       return 0;
+    } on Object {
+      _service ??= service;
+      _closing = false;
+      rethrow;
+    }
+  }
+
+  /// Deletes the account with all its cloud data, then clears this device
+  /// back to an empty guest state. Pending uploads are dropped: they would
+  /// only be deleted again.
+  Future<void> deleteAccountAndWipe() async {
+    final service = _service;
+    final auth = ref.read(authServiceProvider);
+    final habits = ref.read(habitsControllerProvider.notifier);
+    _closing = true;
+    _timer?.cancel();
+    _service = null;
+    try {
+      while (_running != null) {
+        await _running;
+      }
+      await auth.deleteAccount();
+      await service?.wipeLocal();
+      ref.invalidate(newUnlocksProvider);
+      habits.refreshAll();
     } on Object {
       _service ??= service;
       _closing = false;

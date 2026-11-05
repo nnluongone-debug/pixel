@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/new_unlock_marks.dart';
 import '../../../domain/analytics/check_in_record.dart';
 import '../../../domain/analytics/pixel_badge.dart';
+import '../../../providers/new_unlocks_provider.dart';
 import '../stats_formatters.dart';
 import 'badge_style.dart';
 import 'badge_tier_style.dart';
@@ -13,15 +16,20 @@ import 'stat_tile.dart';
 
 /// A badge with its rarity, artwork and state: the unlock date, or a
 /// progress bar toward it while locked.
-class BadgeCard extends StatelessWidget {
+class BadgeCard extends ConsumerWidget {
   const BadgeCard({super.key, required this.status});
 
   final BadgeStatus status;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final definition = status.definition;
+    final isNew = ref.watch(
+      newUnlocksProvider.select(
+        (s) => s[UnlockKind.badge]!.contains(definition.id.name),
+      ),
+    );
     final id = definition.id;
     final tier = BadgeTierStyle.of(definition.tier);
     final unlocked = status.isUnlocked;
@@ -43,12 +51,21 @@ class BadgeCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              l10n.badgeTier(definition.tier),
-              style: AppTextStyles.labelSm.copyWith(
-                color: unlocked ? tier.labelColor : AppColors.textMuted,
-                fontWeight: FontWeight.w800,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Text(
+                    l10n.badgeTier(definition.tier),
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.labelSm.copyWith(
+                      color: unlocked ? tier.labelColor : AppColors.textMuted,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                if (isNew) ...[const SizedBox(width: 6), const NewChip()],
+              ],
             ),
             const SizedBox(height: 6),
             PixelBadgeArt(definition: definition, unlocked: unlocked),

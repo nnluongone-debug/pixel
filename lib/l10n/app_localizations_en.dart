@@ -9,7 +9,200 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Pixel Quest';
+  String get appTitle => 'Habit Tracker - Pixel';
+
+  @override
+  String get editorModeTimes => 'SPECIFIC TIMES';
+
+  @override
+  String get editorModeRepeat => 'REPEAT';
+
+  @override
+  String get editorEvery => 'EVERY';
+
+  @override
+  String get editorFrom => 'FROM';
+
+  @override
+  String get editorTo => 'TO';
+
+  @override
+  String editorEveryMinutes(int count) {
+    return '${count}m';
+  }
+
+  @override
+  String editorRepeatSummary(int count, String first, String last) {
+    return '≈ $count prompts a day ($first → $last)';
+  }
+
+  @override
+  String get editorErrWindow => 'End time must be after start time';
+
+  @override
+  String configEveryRow(String interval, String from, String to) {
+    return 'every $interval · $from–$to';
+  }
+
+  @override
+  String configSummary(int count, String when) {
+    return 'Scheduled $count prompts, next at $when';
+  }
+
+  @override
+  String get configSummaryNone => 'No prompts scheduled';
+
+  @override
+  String get editorAddTime => '+ ADD TIME';
+
+  @override
+  String editorRemoveTime(String time) {
+    return 'Remove $time';
+  }
+
+  @override
+  String get lockerTitle => 'BRICK THEMES';
+
+  @override
+  String get lockerVaultTag => 'VAULT';
+
+  @override
+  String get lockerActiveSkin => 'ACTIVE SKIN';
+
+  @override
+  String lockerCollection(int count) {
+    return 'THEME COLLECTION ($count TIERS)';
+  }
+
+  @override
+  String lockerTierLine(int tier, String rarity) {
+    return 'TIER $tier • $rarity';
+  }
+
+  @override
+  String get lockerRarityCommon => 'COMMON';
+
+  @override
+  String get lockerRarityRare => 'RARE';
+
+  @override
+  String get lockerRarityEpic => 'EPIC';
+
+  @override
+  String get lockerRarityLegendary => 'LEGENDARY';
+
+  @override
+  String get lockerRarityMythic => 'MYTHIC';
+
+  @override
+  String get lockerRarityCosmic => 'COSMIC';
+
+  @override
+  String get lockerUnlockedMark => 'UNLOCKED';
+
+  @override
+  String get lockerThemeGameBoy => 'Game Boy DMG-01';
+
+  @override
+  String get lockerThemeNeonGlow => 'Arcade Neon Glow';
+
+  @override
+  String get lockerThemeCyberpunk => 'Cyber Glitch & CRT';
+
+  @override
+  String get lockerThemeGemstone => 'Pixel Gemstones';
+
+  @override
+  String get lockerThemePureGold => 'Gold Relic & Obsidian';
+
+  @override
+  String get lockerThemeNebula => 'Starlight Nebula';
+
+  @override
+  String get lockerEquip => 'EQUIP';
+
+  @override
+  String get lockerActive => 'ACTIVE';
+
+  @override
+  String lockerStreakProgress(int current, int goal) {
+    return '$current/$goal D';
+  }
+
+  @override
+  String lockerLevelChip(int level) {
+    return 'LVL $level';
+  }
+
+  @override
+  String get lockerPro => 'PRO';
+
+  @override
+  String lockerReqStreak(int days) {
+    return 'Requires $days-Day Streak';
+  }
+
+  @override
+  String lockerReqLevel(int level) {
+    return 'Requires Hero LVL $level';
+  }
+
+  @override
+  String lockerReqLevelOrStreak(int level, int days) {
+    return 'Requires Hero LVL $level or $days-Day Streak';
+  }
+
+  @override
+  String get lockerComingSoon => 'COMING SOON';
+
+  @override
+  String lockerEntrySubtitle(int unlocked, int total) {
+    return '$unlocked/$total UNLOCKED · SKINS & SOUND PACKS';
+  }
+
+  @override
+  String get lockerNewTheme => 'NEW THEME!';
+
+  @override
+  String get lockerEquipNow => 'EQUIP NOW';
+
+  @override
+  String get lockerLater => 'LATER';
+
+  @override
+  String get soundCardTitle => 'SOUND / ÂM THANH';
+
+  @override
+  String get soundEnabled => 'Sound effects';
+
+  @override
+  String get soundVolume => 'Volume';
+
+  @override
+  String soundPackLabel(String name) {
+    return 'Sound pack: $name';
+  }
+
+  @override
+  String get soundPreview => '▶ PREVIEW';
+
+  @override
+  String get soundPackChiptune => '4-Bit Chiptune Bleep';
+
+  @override
+  String get soundPackSynthPop => '8-Bit Synth Pop & Coin SFX';
+
+  @override
+  String get soundPackLaserDrop => 'Laser Drop SFX';
+
+  @override
+  String get soundPackCrystalChime => 'Crystal Bell Chime';
+
+  @override
+  String get soundPackCoinCascade => 'Coin Cascade SFX';
+
+  @override
+  String get soundPackCosmicWarp => 'Cosmic Warp Ambient';
 
   @override
   String get configDemoTitle => 'DEMO // LOVE MATRIX';
@@ -26,7 +219,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get configDemoConfirmBody =>
-      'All habits, bricks and XP on this device are replaced by 25 sample habits. This can\'t be undone.';
+      'All habits, bricks and XP on this device are replaced by 12 sample habits. This can\'t be undone.';
 
   @override
   String get configDemoConfirm => 'REPLACE';
@@ -277,6 +470,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountSignOutAnyway => 'SIGN OUT ANYWAY';
+
+  @override
+  String get accountDelete => 'DELETE ACCOUNT';
+
+  @override
+  String get accountDeleteTitle => 'DELETE ACCOUNT?';
+
+  @override
+  String get accountDeleteBody =>
+      'Your account, profile, habits, bricks and XP are permanently deleted from the cloud and this device. This cannot be undone.';
+
+  @override
+  String get accountDeleteConfirm => 'DELETE FOREVER';
+
+  @override
+  String get accountDeleteOffline =>
+      'Connect to the internet to delete your account.';
 
   @override
   String get accountCancel => 'CANCEL';
@@ -609,53 +819,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editorTitleHint => 'Read 20 Pages';
 
   @override
+  String get editorTemplatesLabel => 'TEMPLATES · TAP TO FILL';
+
+  @override
+  String get tasksSwipeHint => 'Swipe left on a habit to delete it';
+
+  @override
+  String get editorIconsMore => 'More icons';
+
+  @override
+  String get editorIconsLess => 'Fewer icons';
+
+  @override
+  String get detailNotFound => 'This habit no longer exists.';
+
+  @override
   String get editorClearTitle => 'Clear title';
-
-  @override
-  String editorArchetype(String name) {
-    return 'ARCHETYPE: $name';
-  }
-
-  @override
-  String get editorArchScholar => 'SCHOLAR';
-
-  @override
-  String get editorArchScholarFlavor => 'Intellect, one tile at a time';
-
-  @override
-  String get editorArchWarrior => 'WARRIOR';
-
-  @override
-  String get editorArchWarriorFlavor => 'Strength, stacked daily';
-
-  @override
-  String get editorArchHydro => 'HYDRO';
-
-  @override
-  String get editorArchHydroFlavor => 'Flow state, glass by glass';
-
-  @override
-  String get editorArchMonk => 'MONK';
-
-  @override
-  String get editorArchMonkFlavor => 'Calm is a streak too';
-
-  @override
-  String get editorArchHacker => 'HACKER';
-
-  @override
-  String get editorArchHackerFlavor => 'Ship a little every day';
-
-  @override
-  String get editorArchStriker => 'STRIKER';
-
-  @override
-  String get editorArchStrikerFlavor => 'Aim, hit, repeat';
-
-  @override
-  String editorStreakBonus(int xp, int max) {
-    return '+$xp XP per streak day (max +$max)';
-  }
 
   @override
   String get editorIconMatrix => 'SELECT ICON MATRIX';
@@ -674,20 +853,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String editorColorSemantics(String hex) {
     return 'Color $hex';
   }
-
-  @override
-  String get editorTBlock => 'T-BLOCK SHAPE';
-
-  @override
-  String get editorActive => 'ACTIVE';
-
-  @override
-  String editorXpPerTile(int xp) {
-    return '+$xp XP / TILE';
-  }
-
-  @override
-  String get editorField => '10×15 FIELD';
 
   @override
   String get editorCadenceTag => '03 // CADENCE';
@@ -784,10 +949,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get configAllow => 'ALLOW';
 
   @override
-  String get configSendTest => 'SEND TEST PROMPT';
-
-  @override
-  String get configScheduled => 'SCHEDULED PROMPTS';
+  String configScheduledCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count HABITS',
+      one: '1 HABIT',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get configNoReminders =>
@@ -796,12 +966,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get configBlocked =>
       'Notifications are blocked. Enable them in system settings.';
-
-  @override
-  String get configAllowFirst => 'Allow notifications first.';
-
-  @override
-  String get configTestFailed => 'Could not send the prompt.';
 
   @override
   String get configLanguage => 'LANGUAGE / NGÔN NGỮ';
@@ -825,9 +989,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get reminderTest => 'Test prompt — reminders are working.';
-
-  @override
   String gridHudYear(int year) {
     return 'YEAR $year';
   }
@@ -848,7 +1009,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get gridMatrixTitle => 'MATRIX GRID • 10x15';
+  String gridMatrixTitle(int rows) {
+    return 'MATRIX GRID • 10x$rows';
+  }
 
   @override
   String gridMatrixCleared(int percent) {
@@ -1003,6 +1166,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonCancel => 'CANCEL';
+
+  @override
+  String get commonNew => 'NEW';
+
+  @override
+  String unlockToastBadges(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count new badges unlocked!',
+      one: 'New badge unlocked!',
+    );
+    return '🏅 $_temp0 See Stats.';
+  }
+
+  @override
+  String unlockToastThemes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count new brick themes unlocked!',
+      one: 'New brick theme unlocked!',
+    );
+    return '🎨 $_temp0 See Config → Locker.';
+  }
 
   @override
   String get commonDelete => 'DELETE';

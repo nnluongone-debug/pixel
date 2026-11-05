@@ -21,7 +21,10 @@ abstract final class SyncDocuments {
     'icon_name',
     'unit',
     'schedule_days',
-    'reminder_minutes',
+    'reminder_times',
+    'reminder_every',
+    'reminder_from',
+    'reminder_to',
     'created_at',
     'progress_date',
     'updated_at',
@@ -62,6 +65,19 @@ abstract final class SyncDocuments {
     final row = <String, Object?>{
       for (final c in columns(entity)) c: _normalize(doc[_camel(c)]),
     };
+    // Docs written before multi-time reminders carry a single
+    // `reminderMinutes`; fold it into `reminder_times`.
+    if (entity == SyncEntity.habit &&
+        row['reminder_times'] == null &&
+        _normalize(doc['reminderMinutes']) is int) {
+      row['reminder_times'] = '${_normalize(doc['reminderMinutes'])}';
+    }
+    if (entity == SyncEntity.habit) {
+      row['reminder_times'] ??= '';
+      // Docs from before repeat reminders lack the window columns.
+      row['reminder_from'] ??= Habit.defaultReminderFrom;
+      row['reminder_to'] ??= Habit.defaultReminderTo;
+    }
     try {
       if (row['updated_at'] is! int) return null;
       if (entity == SyncEntity.habit) {

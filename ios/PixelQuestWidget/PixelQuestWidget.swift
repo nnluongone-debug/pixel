@@ -38,6 +38,8 @@ struct PixelQuestWidgetView: View {
     @Environment(\.widgetFamily) private var family
     let entry: PixelQuestEntry
 
+    private var skin: WidgetSkin { WidgetSkin(id: entry.snapshot?.skin) }
+
     var body: some View {
         Group {
             if let snapshot = entry.snapshot, !snapshot.habits.isEmpty {
@@ -53,7 +55,8 @@ struct PixelQuestWidgetView: View {
                 )
             }
         }
-        .containerBackground(for: .widget) { Neo.background }
+        .environment(\.widgetSkin, skin)
+        .containerBackground(for: .widget) { skin.background }
     }
 }
 
@@ -64,7 +67,7 @@ struct PixelQuestWidget: Widget {
         StaticConfiguration(kind: kind, provider: PixelQuestProvider()) { entry in
             PixelQuestWidgetView(entry: entry)
         }
-        .configurationDisplayName("Pixel Quest")
+        .configurationDisplayName("Habit Tracker - Pixel")
         .description(WidgetStrings(lang: nil).galleryDescription)
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
         .contentMarginsDisabled()

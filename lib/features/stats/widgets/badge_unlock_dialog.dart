@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../domain/analytics/pixel_badge.dart';
+import '../../../providers/sound_providers.dart';
+import '../../../services/sound/sound_slot.dart';
 import '../stats_formatters.dart';
 import 'badge_style.dart';
 import 'badge_tier_style.dart';
@@ -15,6 +17,7 @@ import 'pixel_badge_art.dart';
 abstract final class BadgeUnlockDialog {
   static Future<void> show(BuildContext context, BadgeDefinition badge) {
     HapticFeedback.heavyImpact();
+    SoundFx.play(context, SoundSlot.badgeUnlock);
     return showGeneralDialog<void>(
       context: context,
       barrierDismissible: true,

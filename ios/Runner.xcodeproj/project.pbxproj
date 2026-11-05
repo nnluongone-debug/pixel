@@ -16,6 +16,7 @@
 		3412CB13172B3C6DCA7BB43D /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD4CD02BD9F29D3B0A66E90 /* WidgetSnapshot.swift */; };
 		3ADB78B5482A7A774E2783E3 /* WidgetStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B88079E860CA5C205A96D78 /* WidgetStrings.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
+		6A62F4FAE3F413DA470F806C /* SkinBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5210A2DC8EFEB394B4E4BE4D /* SkinBlock.swift */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		768F034E504F47CDBCB75706 /* SmallWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D04AE25573F02EFACB9A18B /* SmallWidgetView.swift */; };
 		7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */; };
@@ -24,6 +25,7 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		A6D20CF07F8E93739D6DB8BC /* WidgetSkin.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F7E2B941069DC1B366F565 /* WidgetSkin.swift */; };
 		BFC00D69B1F253CF08C5B769 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF1155A5CC273ACDC60A349B /* Pods_RunnerTests.framework */; };
 		CE6E8FA7634AB82C6A2B35D1 /* PixelQuestWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DB7BCCC59D8A68959228920B /* PixelQuestWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		DCDDC3468022BDCD9B5DAAD5 /* GalleryPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681E40FDD6612B06C4519327 /* GalleryPreview.swift */; };
@@ -83,6 +85,7 @@
 		331C8081294A63A400263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		3B88079E860CA5C205A96D78 /* WidgetStrings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetStrings.swift; sourceTree = "<group>"; };
+		5210A2DC8EFEB394B4E4BE4D /* SkinBlock.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinBlock.swift; sourceTree = "<group>"; };
 		562211EC4CE511F80CECABDF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		5BBA0EA99B4E906BFED9C9E8 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		639D1979480DB99A9FE1F1D9 /* MediumWidgetView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MediumWidgetView.swift; sourceTree = "<group>"; };
@@ -106,6 +109,7 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B03A406C2D8CF77318AD60A2 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
 		B64A1E420D40581142EF5DA3 /* BlockGrid.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BlockGrid.swift; sourceTree = "<group>"; };
+		B6F7E2B941069DC1B366F565 /* WidgetSkin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetSkin.swift; sourceTree = "<group>"; };
 		CA4B4AFB95B08A1034CAB048 /* PixelQuestWidget.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = PixelQuestWidget.entitlements; sourceTree = "<group>"; };
 		CC269277D49F2CBDFF3AA121 /* WidgetTheme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetTheme.swift; sourceTree = "<group>"; };
 		CF1155A5CC273ACDC60A349B /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -248,6 +252,8 @@
 				5BBA0EA99B4E906BFED9C9E8 /* Info.plist */,
 				CA4B4AFB95B08A1034CAB048 /* PixelQuestWidget.entitlements */,
 				3B88079E860CA5C205A96D78 /* WidgetStrings.swift */,
+				B6F7E2B941069DC1B366F565 /* WidgetSkin.swift */,
+				5210A2DC8EFEB394B4E4BE4D /* SkinBlock.swift */,
 			);
 			name = PixelQuestWidget;
 			path = PixelQuestWidget;
@@ -512,6 +518,8 @@
 				3412CB13172B3C6DCA7BB43D /* WidgetSnapshot.swift in Sources */,
 				15834F776E6BEA0E934012BD /* WidgetTheme.swift in Sources */,
 				3ADB78B5482A7A774E2783E3 /* WidgetStrings.swift in Sources */,
+				A6D20CF07F8E93739D6DB8BC /* WidgetSkin.swift in Sources */,
+				6A62F4FAE3F413DA470F806C /* SkinBlock.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -630,7 +638,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9740EEB31CF90195004384FC /* Generated.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = PixelQuestWidget/PixelQuestWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -709,7 +717,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9740EEB31CF90195004384FC /* Generated.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = PixelQuestWidget/PixelQuestWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -739,7 +747,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -796,7 +804,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -897,7 +905,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9740EEB31CF90195004384FC /* Generated.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = PixelQuestWidget/PixelQuestWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;

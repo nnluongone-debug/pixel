@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pixel_quest/data/models/check_in.dart';
 import 'package:pixel_quest/data/models/habit.dart';
 import 'package:pixel_quest/data/models/user_stats.dart';
+import 'package:pixel_quest/domain/cosmetics/theme_catalog.dart';
 import 'package:pixel_quest/services/home_widget_snapshot.dart';
 
 Habit habit(
@@ -114,5 +115,17 @@ void main() {
       stats: stats,
     );
     expect(s['weekBlocks'], 2);
+  });
+
+  test('includes the equipped theme id, defaulting to neonGlow', () {
+    Map<String, Object?> build([String? skin]) => HomeWidgetSnapshot.build(
+      now: now,
+      habits: [habit('a', '#2DE38E')],
+      checkIns: [],
+      stats: stats,
+      skin: skin ?? ThemeId.neonGlow.name,
+    );
+    expect(build()['skin'], 'neonGlow');
+    expect(build(ThemeId.nebula.name)['skin'], 'nebula');
   });
 }

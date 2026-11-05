@@ -9,6 +9,7 @@ import 'package:pixel_quest/providers/account_providers.dart';
 import 'package:pixel_quest/providers/habit_providers.dart';
 import 'package:pixel_quest/providers/locale_providers.dart';
 import 'package:pixel_quest/providers/repository_providers.dart';
+import 'package:pixel_quest/providers/new_unlocks_provider.dart';
 import 'package:pixel_quest/providers/sync_providers.dart';
 import 'package:pixel_quest/services/auth/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,9 +25,17 @@ class _FakeUser implements User {
 
 class _FakeAuth extends AuthService {
   int signOuts = 0;
+  int deletes = 0;
+  bool failDelete = false;
 
   @override
   Future<void> signOut() async => signOuts++;
+
+  @override
+  Future<void> deleteAccount() async {
+    if (failDelete) throw const AuthException(AuthFailure.network);
+    deletes++;
+  }
 }
 
 /// Every upload fails as if the network were down.
@@ -88,6 +97,11 @@ void main() {
   test('signOutAndWipe uploads, signs out and wipes', () async {
     final container = await start(FakeFirebaseFirestore());
     await addHabit(container);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('seen_badges', ['firstBlock']);
+    await container.read(newUnlocksProvider.notifier).add(UnlockKind.badge, [
+      'firstBlock',
+    ]);
 
     final pending = await container
         .read(syncStatusProvider.notifier)
@@ -96,6 +110,35 @@ void main() {
     expect(pending, 0);
     expect(auth.signOuts, 1);
     expect(await db.query('habits'), isEmpty);
+    // Unlock bookkeeping must not leak to the next account.
+    expect(prefs.getStringList('seen_badges'), isNull);
+    expect(container.read(newUnlocksProvider)[UnlockKind.badge], isEmpty);
+  });
+
+  test('deleteAccountAndWipe deletes even offline-pending data', () async {
+    final container = await start(_OfflineFirestore());
+    await addHabit(container);
+
+    await container.read(syncStatusProvider.notifier).deleteAccountAndWipe();
+
+    expect(auth.deletes, 1);
+    expect(await db.query('habits'), isEmpty);
+  });
+
+  test('deleteAccountAndWipe keeps local data when the call fails', () async {
+    final container = await start(FakeFirebaseFirestore());
+    await addHabit(container);
+    auth.failDelete = true;
+    final sync = container.read(syncStatusProvider.notifier);
+
+    await expectLater(
+      sync.deleteAccountAndWipe(),
+      throwsA(isA<AuthException>()),
+    );
+    expect(await db.query('habits'), hasLength(1));
+    // Sync keeps working after a failed delete.
+    await sync.syncNow();
+    expect(container.read(syncStatusProvider).phase, SyncPhase.idle);
   });
 
   test('signOutAndWipe refuses while changes are unsynced', () async {

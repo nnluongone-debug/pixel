@@ -5,7 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pixel_quest/data/database/app_database.dart';
 import 'package:pixel_quest/data/models/habit.dart';
 import 'package:pixel_quest/features/habit_editor/habit_editor_sheet.dart';
+import 'package:pixel_quest/providers/locale_providers.dart';
 import 'package:pixel_quest/providers/repository_providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../support/localized_test_app.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -21,13 +23,18 @@ void main() {
     Habit? habit,
     Locale locale = const Locale('en'),
   }) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     await tester.runAsync(() async {
       db = await AppDatabase.open(
         factory: databaseFactoryFfiNoIsolate,
         path: inMemoryDatabasePath,
       );
       container = ProviderContainer(
-        overrides: [databaseProvider.overrideWithValue(db)],
+        overrides: [
+          databaseProvider.overrideWithValue(db),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+        ],
       );
     });
     addTearDown(() async {
@@ -111,8 +118,63 @@ void main() {
     expect(h.target, 35); // 30 default + 5 step
     expect(h.unit, '');
     expect(h.schedule.dueWeekdays, [DateTime.monday, DateTime.wednesday]);
-    expect(h.reminderMinutes, 20 * 60 + 30);
+    expect(h.reminderTimes, [20 * 60 + 30]);
     expect(find.text('NEW HABIT'), findsNothing);
+  });
+
+  testWidgets('repeat mode persists every, from and to', (tester) async {
+    await pumpSheet(tester);
+    await tester.enterText(find.byType(TextField), 'Stretch');
+    await tapVisible(tester, find.byType(Switch));
+    await tapVisible(tester, find.text('REPEAT'));
+    await tapVisible(tester, find.text('2h'));
+    expect(find.textContaining('prompts a day'), findsOneWidget);
+    final create = find.textContaining('CREATE HABIT');
+    await tapVisible(tester, create);
+    await settleDb(tester);
+    await tester.pumpAndSettle();
+
+    final h = (await habits(tester)).single;
+    expect(h.reminderEvery, 120);
+    expect(h.reminderFrom, 8 * 60);
+    expect(h.reminderTo, 22 * 60);
+    expect(h.hasReminder, isTrue);
+  });
+
+  testWidgets('specific mode stores no repeat interval', (tester) async {
+    await pumpSheet(tester);
+    await tester.enterText(find.byType(TextField), 'Stretch');
+    await tapVisible(tester, find.byType(Switch));
+    await tapVisible(tester, find.textContaining('CREATE HABIT'));
+    await settleDb(tester);
+    await tester.pumpAndSettle();
+
+    final h = (await habits(tester)).single;
+    expect(h.reminderEvery, isNull);
+    expect(h.reminderTimes, [20 * 60 + 30]);
+  });
+
+  testWidgets('typing suggests a template that fills the form', (tester) async {
+    await pumpSheet(tester, locale: const Locale('vi'));
+    await tester.enterText(find.byType(TextField), 'uong');
+    await tester.pump();
+    expect(find.text('Uống nước'), findsOneWidget);
+    expect(find.text('Uống vitamin'), findsOneWidget);
+
+    await tester.tap(find.text('Uống nước'));
+    await tester.pumpAndSettle();
+    expect(find.text('GỢI Ý MẪU · CHẠM ĐỂ ĐIỀN SẴN'), findsNothing);
+    await tapVisible(tester, find.textContaining('TẠO THÓI QUEN'));
+    await settleDb(tester);
+    await tester.pumpAndSettle();
+
+    final h = (await habits(tester)).single;
+    expect(h.name, 'Uống nước');
+    expect(h.iconName, 'water_drop');
+    expect(h.colorHex.toUpperCase(), '#00D2FF');
+    expect(h.type, HabitType.counter);
+    expect(h.unit, 'GL');
+    expect(h.target, 8);
   });
 
   testWidgets('empty title shows inline error and saves nothing', (
@@ -127,6 +189,20 @@ void main() {
     expect(await habits(tester), isEmpty);
   });
 
+  testWidgets('unit chips share one row', (tester) async {
+    await pumpSheet(tester);
+    await tapVisible(tester, find.text('Pages'));
+    final ys = [
+      for (final label in ['Pages', 'Minutes', 'Times', 'Glasses', 'Check'])
+        tester.getCenter(find.text(label)).dy,
+    ];
+    // Same row: centers differ by far less than one chip height.
+    expect(
+      ys.reduce((a, b) => a > b ? a : b) - ys.reduce((a, b) => a < b ? a : b),
+      lessThan(2),
+    );
+  });
+
   testWidgets('shows Vietnamese copy and validation errors', (tester) async {
     await pumpSheet(tester, locale: const Locale('vi'));
     expect(find.text('THÓI QUEN MỚI'), findsOneWidget);
@@ -139,13 +215,18 @@ void main() {
 
   testWidgets('edit mode prefills and saves changes', (tester) async {
     late Habit existing;
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     await tester.runAsync(() async {
       db = await AppDatabase.open(
         factory: databaseFactoryFfiNoIsolate,
         path: inMemoryDatabasePath,
       );
       container = ProviderContainer(
-        overrides: [databaseProvider.overrideWithValue(db)],
+        overrides: [
+          databaseProvider.overrideWithValue(db),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+        ],
       );
       existing = await container
           .read(habitRepositoryProvider)
@@ -156,7 +237,7 @@ void main() {
             colorHex: '#00D2FF',
             iconName: 'water_drop',
             unit: 'GL',
-            reminderMinutes: 600,
+            reminderTimes: [600, 1230],
           );
     });
     addTearDown(() async {
@@ -185,6 +266,14 @@ void main() {
     expect(find.text('EDIT HABIT'), findsOneWidget);
     expect(find.text('Drink Water'), findsOneWidget);
     await tester.enterText(find.byType(TextField), 'Hydrate');
+
+    await tapVisible(tester, find.text('+ ADD TIME'));
+    await tester.pumpAndSettle();
+    // Time picker opened by "+ ADD TIME": cancel it.
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    // Chip close icons come after the header and title-clear icons.
+    await tapVisible(tester, find.byIcon(Icons.close).last);
     final save = find.text('SAVE CHANGES');
     await tester.ensureVisible(save);
     await tester.tap(save);
@@ -196,6 +285,6 @@ void main() {
     expect(h.name, 'Hydrate');
     expect(h.unit, 'GL');
     expect(h.target, 8);
-    expect(h.reminderMinutes, 600);
+    expect(h.reminderTimes, [600]);
   });
 }

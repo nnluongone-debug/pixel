@@ -1,4 +1,4 @@
-import '../../data/models/habit_schedule.dart';
+import '../../data/models/habit.dart';
 import '../../l10n/app_localizations.dart';
 
 /// Shared display labels for values stored as codes in the database.
@@ -25,5 +25,12 @@ extension L10nLabels on AppLocalizations {
     HabitCadence.custom => [
       for (final d in schedule.dueWeekdays) weekdayShort(d),
     ].join(' '),
+  };
+
+  /// Daily goal, e.g. "8 GL", "30 MIN" or the checklist mark.
+  String goalLabel(HabitType type, String unit, int target) => switch (type) {
+    HabitType.counter => '$target ${unitLabel(unit)}'.trim(),
+    HabitType.checklist => tasksGoalCheck,
+    HabitType.timer => '$target $unitMinutes',
   };
 }

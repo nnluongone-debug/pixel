@@ -3,6 +3,7 @@ import WidgetKit
 
 /// 4x4 FULL ARCADE HUD: week header, progression tower, streak tiles.
 struct LargeWidgetView: View {
+    @Environment(\.widgetSkin) private var skin
     let snapshot: WidgetSnapshot
 
     var body: some View {
@@ -13,7 +14,7 @@ struct LargeWidgetView: View {
                 ForEach(streakHabits) { streakTile($0) }
             }
             Text(snapshot.strings.tapToOpen)
-                .font(Neo.mono(8, .bold)).foregroundStyle(Neo.cyan)
+                .font(Neo.mono(8, .bold)).foregroundStyle(skin.accent(Neo.cyan))
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .padding(14)
@@ -28,25 +29,25 @@ struct LargeWidgetView: View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(snapshot.strings.weekMatrix(snapshot.weekNumber))
-                    .font(Neo.mono(15, .bold)).foregroundStyle(Neo.textPrimary)
+                    .font(Neo.mono(15, .bold)).foregroundStyle(skin.text)
                 Text("\(snapshot.strings.shortDate(snapshot.weekStart)) - \(snapshot.strings.shortDate(snapshot.weekEnd))")
-                    .font(Neo.mono(8, .bold)).foregroundStyle(Neo.cyan)
+                    .font(Neo.mono(8, .bold)).foregroundStyle(skin.accent(Neo.cyan))
             }
             Spacer(minLength: 0)
             Text(snapshot.strings.weekBlocks(snapshot.weekBlocks))
-                .font(Neo.mono(11, .bold)).foregroundStyle(Neo.mint)
+                .font(Neo.mono(11, .bold)).foregroundStyle(skin.accent(Neo.mint))
         }
     }
 
     private var tower: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Text(snapshot.strings.tower).font(Neo.mono(8, .bold)).foregroundStyle(Neo.textMuted)
+                Text(snapshot.strings.tower).font(Neo.mono(8, .bold)).foregroundStyle(skin.muted)
                 Spacer(minLength: 0)
                 ForEach(snapshot.habits.prefix(4)) { h in
                     HStack(spacing: 2) {
-                        RoundedRectangle(cornerRadius: 1).fill(Color(hex: h.colorHex)).frame(width: 5, height: 5)
-                        Text(String(h.name.uppercased().prefix(6))).font(Neo.mono(6)).foregroundStyle(Neo.textMuted)
+                        RoundedRectangle(cornerRadius: 1).fill(skin.color(h.colorHex)).frame(width: 5, height: 5)
+                        Text(String(h.name.uppercased().prefix(6))).font(Neo.mono(6)).foregroundStyle(skin.muted)
                     }
                 }
             }
@@ -57,16 +58,16 @@ struct LargeWidgetView: View {
         }
         .padding(10)
         .frame(maxHeight: .infinity)
-        .background(Neo.obsidian.opacity(0.7), in: RoundedRectangle(cornerRadius: 12))
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.06), lineWidth: 0.5))
+        .background(skin.panel, in: RoundedRectangle(cornerRadius: 12))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(skin.panelBorder, lineWidth: skin == .gameBoy ? 1 : 0.5))
     }
 
     private func streakTile(_ h: WidgetHabit) -> some View {
-        let color = Color(hex: h.colorHex)
+        let color = skin.color(h.colorHex)
         return VStack(alignment: .leading, spacing: 2) {
             Image(systemName: habitSymbol(h.icon)).font(.system(size: 11)).foregroundStyle(color)
             Text(snapshot.strings.streakTile(h.streak))
-                .font(Neo.mono(16, .bold)).foregroundStyle(Neo.textPrimary)
+                .font(Neo.mono(16, .bold)).foregroundStyle(skin.text)
             Text(h.name.uppercased()).font(Neo.mono(6, .bold)).foregroundStyle(color).lineLimit(1)
         }
         .padding(7)

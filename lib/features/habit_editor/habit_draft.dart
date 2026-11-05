@@ -1,8 +1,9 @@
 import '../../core/l10n/l10n.dart';
 import '../../data/models/habit.dart';
+import '../../domain/templates/habit_template.dart';
 
 /// Reasons a draft cannot be saved; the sheet maps them to localized text.
-enum HabitDraftError { titleEmpty, noDays, quota }
+enum HabitDraftError { titleEmpty, noDays, quota, window }
 
 /// A unit chip in the cadence section. Each chip also decides the habit type.
 class HabitUnitOption {
@@ -70,7 +71,12 @@ class HabitDraft {
     this.type = HabitType.counter,
     this.unit = 'PG',
     this.target = 20,
-    this.reminderMinutes,
+    this.remindersOn = false,
+    this.repeatMode = false,
+    this.reminderTimes = const [],
+    this.reminderEvery = 60,
+    this.reminderFrom = Habit.defaultReminderFrom,
+    this.reminderTo = Habit.defaultReminderTo,
   });
 
   factory HabitDraft.fromHabit(Habit habit) => HabitDraft(
@@ -82,10 +88,13 @@ class HabitDraft {
     type: habit.type,
     unit: habit.unit,
     target: habit.target,
-    reminderMinutes: habit.reminderMinutes,
+    remindersOn: habit.hasReminder,
+    repeatMode: habit.reminderEvery != null,
+    reminderTimes: habit.reminderTimes,
+    reminderEvery: habit.reminderEvery ?? 60,
+    reminderFrom: habit.reminderFrom,
+    reminderTo: habit.reminderTo,
   );
-
-  static const _keep = Object();
 
   final String name;
   final String iconName;
@@ -95,7 +104,32 @@ class HabitDraft {
   final HabitType type;
   final String unit;
   final int target;
-  final int? reminderMinutes;
+
+  /// Master switch; off stores no reminder whatever the other fields hold.
+  final bool remindersOn;
+
+  /// True = "repeat every N minutes", false = specific times. Both modes
+  /// keep their values while the user flips between them.
+  final bool repeatMode;
+
+  /// Specific times: minutes after midnight, sorted and unique.
+  final List<int> reminderTimes;
+
+  /// Repeat mode: interval in minutes and inclusive window.
+  final int reminderEvery;
+  final int reminderFrom;
+  final int reminderTo;
+
+  bool get windowValid => reminderTo > reminderFrom;
+
+  /// Fire times of repeat mode, as [Habit.reminderSlots] computes them.
+  List<int> get repeatSlots => [
+    for (var m = reminderFrom; m <= reminderTo; m += reminderEvery) m,
+  ];
+
+  /// Values to persist: nothing when off, `reminderEvery` only in repeat mode.
+  List<int> get savedTimes => remindersOn ? reminderTimes : const [];
+  int? get savedEvery => remindersOn && repeatMode ? reminderEvery : null;
 
   /// Timers step in 5-minute increments, everything else by 1.
   int get step => type == HabitType.timer ? 5 : 1;
@@ -116,6 +150,8 @@ class HabitDraft {
     if (name.trim().isEmpty) return HabitDraftError.titleEmpty;
     if (!schedule.isValid) return HabitDraftError.noDays;
     if (target <= 0) return HabitDraftError.quota;
+    final badWindow = remindersOn && repeatMode && !windowValid;
+    if (badWindow) return HabitDraftError.window;
     return null;
   }
 
@@ -124,6 +160,23 @@ class HabitDraft {
     unit: option.unit,
     target: option.defaultTarget,
   );
+
+  /// Fills identity, color, cadence and quota from [t]; reminders stay.
+  HabitDraft withTemplate(HabitTemplate t, String languageCode) {
+    final cadence = t.schedule.cadence;
+    return copyWith(
+      name: t.nameFor(languageCode),
+      iconName: t.iconName,
+      colorHex: t.colorHex,
+      cadence: cadence,
+      customDays: cadence == HabitCadence.custom
+          ? t.schedule.dueWeekdays.toSet()
+          : null,
+      type: t.type,
+      unit: t.unit,
+      target: t.target,
+    );
+  }
 
   HabitDraft copyWith({
     String? name,
@@ -134,7 +187,12 @@ class HabitDraft {
     HabitType? type,
     String? unit,
     int? target,
-    Object? reminderMinutes = _keep,
+    bool? remindersOn,
+    bool? repeatMode,
+    List<int>? reminderTimes,
+    int? reminderEvery,
+    int? reminderFrom,
+    int? reminderTo,
   }) => HabitDraft(
     name: name ?? this.name,
     iconName: iconName ?? this.iconName,
@@ -144,8 +202,11 @@ class HabitDraft {
     type: type ?? this.type,
     unit: unit ?? this.unit,
     target: target ?? this.target,
-    reminderMinutes: identical(reminderMinutes, _keep)
-        ? this.reminderMinutes
-        : reminderMinutes as int?,
+    remindersOn: remindersOn ?? this.remindersOn,
+    repeatMode: repeatMode ?? this.repeatMode,
+    reminderTimes: reminderTimes ?? this.reminderTimes,
+    reminderEvery: reminderEvery ?? this.reminderEvery,
+    reminderFrom: reminderFrom ?? this.reminderFrom,
+    reminderTo: reminderTo ?? this.reminderTo,
   );
 }

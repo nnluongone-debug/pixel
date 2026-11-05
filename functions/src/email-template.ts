@@ -11,13 +11,13 @@ const MINUTES = CODE_TTL_MS / 60_000;
 
 const COPY = {
   en: {
-    subject: (code: string) => `${code} is your Pixel Quest code`,
+    subject: (code: string) => `${code} is your Habit Tracker - Pixel code`,
     intro: 'Your sign-in code',
     expires: `This code expires in ${MINUTES} minutes.`,
     ignore: "If you didn't request this, you can safely ignore this email.",
   },
   vi: {
-    subject: (code: string) => `${code} là mã đăng nhập Pixel Quest của bạn`,
+    subject: (code: string) => `${code} là mã đăng nhập Habit Tracker - Pixel của bạn`,
     intro: 'Mã đăng nhập của bạn',
     expires: `Mã có hiệu lực trong ${MINUTES} phút.`,
     ignore: 'Nếu bạn không yêu cầu mã này, hãy bỏ qua email này.',
@@ -32,7 +32,7 @@ export function buildLoginEmail(code: string, lang: Lang): LoginEmail {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
 <table role="presentation" width="420" cellpadding="0" cellspacing="0" style="max-width:420px;background:#14142a;border:2px solid #39ff14;">
 <tr><td style="padding:24px;text-align:center;">
-<div style="font-size:14px;letter-spacing:4px;color:#39ff14;">PIXEL QUEST</div>
+<div style="font-size:14px;letter-spacing:4px;color:#39ff14;">HABIT TRACKER · PIXEL</div>
 <div style="margin-top:16px;font-size:14px;color:#a8a8c0;">${c.intro}</div>
 <div style="margin:16px 0;font-size:40px;font-weight:bold;letter-spacing:10px;color:#00f0ff;">${code}</div>
 <div style="font-size:13px;color:#e6e6f0;">${c.expires}</div>
@@ -40,6 +40,6 @@ export function buildLoginEmail(code: string, lang: Lang): LoginEmail {
 </td></tr></table>
 </td></tr></table>
 </body></html>`;
-  const text = `PIXEL QUEST\n\n${c.intro}: ${code}\n\n${c.expires}\n${c.ignore}\n`;
+  const text = `HABIT TRACKER - PIXEL\n\n${c.intro}: ${code}\n\n${c.expires}\n${c.ignore}\n`;
   return { subject: c.subject(code), html, text };
 }

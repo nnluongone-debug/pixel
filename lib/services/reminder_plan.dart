@@ -37,12 +37,15 @@ class ReminderEntry {
   int get hashCode => Object.hash(id, habitId, weekday, minutes, title, body);
 }
 
+/// A 24 h window at the finest interval (15 min) has 96 fire times.
+const int _maxSlotsPerHabit = 96;
+
 /// Notification title shared by scheduled and test prompts (brand name).
 const String reminderTitle = 'PIXEL QUEST';
 
 /// Which notifications should exist for [habits]: one daily entry for
-/// every-day habits, otherwise one weekly entry per due weekday. Habits
-/// without a reminder or with an empty schedule produce nothing. Text is
+/// every-day habits, otherwise one weekly entry per due weekday, for each
+/// reminder time of each habit. Habits without a reminder or with an empty schedule produce nothing. Text is
 /// rendered with [l10n] so a language change yields a different plan.
 List<ReminderEntry> buildReminderPlan(
   Iterable<Habit> habits,
@@ -51,23 +54,25 @@ List<ReminderEntry> buildReminderPlan(
   final entries = <ReminderEntry>[];
   var slot = 0;
   for (final habit in habits) {
-    final minutes = habit.reminderMinutes;
-    if (minutes == null || !habit.schedule.isValid) continue;
+    final slots = habit.reminderSlots;
+    if (slots.isEmpty || !habit.schedule.isValid) continue;
     final body = reminderBody(habit, l10n);
     final isDaily = habit.schedule == HabitSchedule.daily;
     final weekdays = isDaily ? <int?>[null] : habit.schedule.dueWeekdays;
-    for (final weekday in weekdays) {
-      entries.add(
-        ReminderEntry(
-          // 8 ids per habit slot: 0 = daily, 1-7 = weekday.
-          id: slot * 8 + (weekday ?? 0),
-          habitId: habit.id,
-          weekday: weekday,
-          minutes: minutes,
-          title: reminderTitle,
-          body: body,
-        ),
-      );
+    for (final (timeIndex, minutes) in slots.indexed) {
+      for (final weekday in weekdays) {
+        entries.add(
+          ReminderEntry(
+            // Unique per habit slot, time index (< 96) and weekday (0 = daily).
+            id: (slot * _maxSlotsPerHabit + timeIndex) * 8 + (weekday ?? 0),
+            habitId: habit.id,
+            weekday: weekday,
+            minutes: minutes,
+            title: reminderTitle,
+            body: body,
+          ),
+        );
+      }
     }
     slot++;
   }

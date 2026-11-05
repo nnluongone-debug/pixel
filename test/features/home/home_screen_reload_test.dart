@@ -14,10 +14,13 @@ import 'package:pixel_quest/features/matrix/models/check_in_block.dart';
 import 'package:pixel_quest/features/matrix/widgets/matrix_effects_painter.dart';
 import 'package:pixel_quest/features/matrix/widgets/pixel_matrix_grid.dart';
 import 'package:pixel_quest/providers/matrix_providers.dart';
+import 'package:pixel_quest/providers/locale_providers.dart';
 import 'package:pixel_quest/providers/repository_providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../../support/localized_test_app.dart';
+import '../../support/silent_sound_service.dart';
 
 /// Stands in for "a dependency changed" (what a habit mutation does), which
 /// puts the provider in a reloading state while its new query runs.
@@ -43,13 +46,19 @@ void main() {
       );
       late Database db;
       late ProviderContainer container;
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
       await tester.runAsync(() async {
         db = await AppDatabase.open(
           factory: databaseFactoryFfiNoIsolate,
           path: inMemoryDatabasePath,
         );
         container = ProviderContainer(
-          overrides: [databaseProvider.overrideWithValue(db)],
+          overrides: [
+            databaseProvider.overrideWithValue(db),
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            silentSoundOverride,
+          ],
         );
         await container
             .read(habitRepositoryProvider)
@@ -110,12 +119,12 @@ void main() {
         find.descendant(
           of: find.byType(PixelMatrixGrid),
           matching: find.byWidgetPredicate(
-            (w) => w is CustomPaint && w.foregroundPainter != null,
+            (w) => w is CustomPaint && w.painter is MatrixEffectsPainter,
           ),
         ),
       );
       expect(
-        (effects.foregroundPainter! as MatrixEffectsPainter).effects,
+        (effects.painter! as MatrixEffectsPainter).effects,
         isNotEmpty,
         reason: 'reaching the target should drop a brick with animation',
       );
@@ -132,10 +141,14 @@ void main() {
         path: inMemoryDatabasePath,
       );
     });
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     var pending = Completer<List<CheckInBlock>>();
     final container = ProviderContainer(
       overrides: [
         databaseProvider.overrideWithValue(db),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        silentSoundOverride,
         matrixBlocksProvider.overrideWith((ref) {
           ref.watch(_reloadTrigger);
           return pending.future;

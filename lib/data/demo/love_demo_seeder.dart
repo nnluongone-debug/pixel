@@ -8,10 +8,11 @@ import '../../domain/progression/xp_rules.dart';
 import '../models/habit.dart';
 import '../repositories/user_stats_repository.dart';
 
-/// Replaces the local data with a presentation demo: 25 daily habits whose
-/// check-ins over the last 10 days stack into a 10x15 matrix spelling LOVE
-/// (pink letter habits on dark background habits). Guest mode only — the
-/// caller must not run it while an account is syncing.
+/// Replaces the local data with a presentation demo: 12 daily habits whose
+/// check-ins over the last 10 days stack into a matrix spelling LOVE (pink
+/// letter habits over dark filler habits; columns end at their highest
+/// letter). Guest mode only — the caller must not run it while an account
+/// is syncing.
 class LoveDemoSeeder {
   LoveDemoSeeder(this._db, {Clock? clock, Uuid? uuid})
     : _clock = clock ?? DateTime.now,
@@ -105,14 +106,14 @@ class LoveDemoSeeder {
     final firstDay = today - LovePattern.columns + 1;
     String key(String k) => _letterNames.containsKey(k) ? k : 'en';
     final letters = _habits(
-      _letterNames[key(lang)]!,
+      _letterNames[key(lang)]!.take(LovePattern.letterHabits).toList(),
       letterColor,
       _letterIcons,
       firstDay,
       hour: 8,
     );
     final background = _habits(
-      _backgroundNames[key(lang)]!,
+      _backgroundNames[key(lang)]!.take(LovePattern.fillerHabits).toList(),
       backgroundColor,
       _backgroundIcons,
       firstDay,
@@ -136,7 +137,7 @@ class LoveDemoSeeder {
         );
         var nextLetter = 0;
         var nextBackground = 0;
-        for (var slot = 0; slot < LovePattern.rows; slot++) {
+        for (var slot = 0; slot < LovePattern.heightOf(column); slot++) {
           final habit = LovePattern.isLetter(column, slot)
               ? letters[nextLetter++]
               : background[nextBackground++];
@@ -171,6 +172,20 @@ class LoveDemoSeeder {
     });
   }
 
+  /// Empty margin columns would break the streak, so the demo habits rest
+  /// on those weekdays (streaks skip days with nothing due).
+  static HabitSchedule _scheduleSkippingEmptyColumns(int firstDay) {
+    final rest = {
+      for (var c = 0; c < LovePattern.columns; c++)
+        if (LovePattern.heightOf(c) == 0)
+          HabitSchedule.weekdayOfEpochDay(firstDay + c),
+    };
+    return HabitSchedule.fromWeekdays([
+      for (var d = DateTime.monday; d <= DateTime.sunday; d++)
+        if (!rest.contains(d)) d,
+    ]);
+  }
+
   List<Habit> _habits(
     List<String> names,
     String color,
@@ -182,6 +197,7 @@ class LoveDemoSeeder {
       firstDay * Duration.millisecondsPerDay,
       isUtc: true,
     );
+    final schedule = _scheduleSkippingEmptyColumns(firstDay);
     return [
       for (var i = 0; i < names.length; i++)
         Habit(
@@ -192,6 +208,7 @@ class LoveDemoSeeder {
           currentProgress: 0,
           colorHex: color,
           iconName: icons[i % icons.length],
+          schedule: schedule,
           createdAt: DateTime(
             created.year,
             created.month,

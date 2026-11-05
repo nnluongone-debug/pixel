@@ -9,6 +9,7 @@ import 'package:timezone/timezone.dart' as tz;
 import '../data/models/habit.dart';
 import '../l10n/app_localizations.dart';
 import 'reminder_plan.dart';
+import 'reminder_time_zone.dart';
 
 /// Initializes the reminder service; call once from `main` before `runApp`.
 Future<void> initializeReminders() => ReminderService.instance.initialize();
@@ -22,15 +23,21 @@ class ReminderService {
 
   static final ReminderService instance = ReminderService._();
 
-  static const _testId = 0x7FFFFF00;
   static const _details = NotificationDetails(
     android: AndroidNotificationDetails(
       'habit_reminders',
       'Habit reminders',
       channelDescription: 'Daily prompts for habits with a reminder time',
-      importance: Importance.defaultImportance,
+      importance: Importance.high,
+      priority: Priority.high,
     ),
-    iOS: DarwinNotificationDetails(),
+    // Explicit so prompts also show as banners while the app is open.
+    iOS: DarwinNotificationDetails(
+      presentAlert: true,
+      presentBanner: true,
+      presentList: true,
+      presentSound: true,
+    ),
   );
 
   final FlutterLocalNotificationsPlugin _plugin =
@@ -38,18 +45,48 @@ class ReminderService {
   bool _ready = false;
   Future<void> _queue = Future.value();
   List<ReminderEntry>? _scheduled;
+  bool _permissionAsked = false;
+  final StreamController<String> _taps = StreamController.broadcast();
 
   bool get isReady => _ready;
+
+  /// Habit ids of prompts the user tapped while the app was running.
+  Stream<String> get tappedHabitIds => _taps.stream;
+
+  /// Habit id of the prompt that cold-started the app, if any.
+  Future<String?> launchHabitId() async {
+    if (!_ready) return null;
+    try {
+      final details = await _plugin.getNotificationAppLaunchDetails();
+      if (details?.didNotificationLaunchApp != true) return null;
+      return _habitIdOf(details!.notificationResponse);
+    } catch (e) {
+      debugPrint('Reminder launch details failed: $e');
+      return null;
+    }
+  }
+
+  static String? _habitIdOf(NotificationResponse? response) {
+    final id = response?.payload;
+    return id == null || id.isEmpty ? null : id;
+  }
+
+  void _onTap(NotificationResponse response) {
+    final id = _habitIdOf(response);
+    if (id != null) _taps.add(id);
+  }
 
   /// Device zone, or UTC when the platform reports an unknown/legacy id,
   /// so reminders still work (possibly offset) instead of all failing.
   Future<void> _setLocalZone() async {
     try {
       final zone = await FlutterTimezone.getLocalTimezone();
-      tz.setLocalLocation(tz.getLocation(zone.identifier));
+      tz.setLocalLocation(
+        resolveLocalLocation(zone.identifier, now: DateTime.now()),
+      );
     } catch (e) {
-      debugPrint('Unknown time zone, reminders use UTC: $e');
-      tz.setLocalLocation(tz.UTC);
+      debugPrint('Time zone lookup failed, matching by UTC offset: $e');
+      tz.setLocalLocation(resolveLocalLocation(null, now: DateTime.now()));
     }
   }
 
@@ -68,6 +105,7 @@ class ReminderService {
             requestSoundPermission: false,
           ),
         ),
+        onDidReceiveNotificationResponse: _onTap,
       );
       _ready = true;
     } catch (e, st) {
@@ -132,8 +170,14 @@ class ReminderService {
     try {
       // Pick up a zone change (travel) before computing fire times.
       await _setLocalZone();
+      // Prompts are silently dropped without permission, so ask once per
+      // session as soon as there is something to schedule.
+      if (plan.isNotEmpty && !_permissionAsked) {
+        _permissionAsked = true;
+        await requestPermission();
+      }
       await _plugin.cancelAllPendingNotifications();
-      final now = tz.TZDateTime.now(tz.local);
+      final now = _wallClock(tz.TZDateTime.now(tz.local));
       for (final entry in plan) {
         final next = nextReminderTime(
           now,
@@ -153,6 +197,8 @@ class ReminderService {
             next.minute,
           ),
           notificationDetails: _details,
+          // Tapping the prompt opens this habit's detail page.
+          payload: entry.habitId,
           androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
           matchDateTimeComponents: entry.weekday == null
               ? DateTimeComponents.time
@@ -166,20 +212,44 @@ class ReminderService {
     }
   }
 
-  /// Shows a notification immediately; false when it could not be posted.
-  Future<bool> showTestPrompt(AppLocalizations l10n) async {
-    if (!_ready) return false;
+  /// Wall-clock fields of [zoned] as a plain DateTime, so next-fire math is
+  /// done in the scheduling zone rather than the device zone.
+  static DateTime _wallClock(tz.TZDateTime zoned) => DateTime(
+    zoned.year,
+    zoned.month,
+    zoned.day,
+    zoned.hour,
+    zoned.minute,
+    zoned.second,
+  );
+
+  /// What the OS actually holds: pending count (real data from the plugin)
+  /// and the soonest fire time among our scheduled entries.
+  Future<ReminderSummary> summary() async {
+    if (!_ready) return const ReminderSummary(0, null);
     try {
-      await _plugin.show(
-        id: _testId,
-        title: reminderTitle,
-        body: l10n.reminderTest,
-        notificationDetails: _details,
-      );
-      return true;
+      await _queue; // let an in-flight reschedule finish first
+      final pending = await _plugin.pendingNotificationRequests();
+      final ids = {for (final p in pending) p.id};
+      final now = _wallClock(tz.TZDateTime.now(tz.local));
+      DateTime? next;
+      for (final e in _scheduled ?? const <ReminderEntry>[]) {
+        if (!ids.contains(e.id)) continue;
+        final t = nextReminderTime(now, weekday: e.weekday, minutes: e.minutes);
+        if (next == null || t.isBefore(next)) next = t;
+      }
+      return ReminderSummary(ids.length, next);
     } catch (e) {
-      debugPrint('Test prompt failed: $e');
-      return false;
+      debugPrint('Reminder summary failed: $e');
+      return const ReminderSummary(0, null);
     }
   }
+}
+
+/// Pending prompt count and the soonest scheduled wall-clock time.
+class ReminderSummary {
+  const ReminderSummary(this.pending, this.next);
+
+  final int pending;
+  final DateTime? next;
 }

@@ -3,12 +3,14 @@ import 'package:flutter/services.dart';
 
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/utils/habit_icons.dart';
 import '../../data/repositories/habit_repository.dart';
-import 'archetype.dart';
+import '../../domain/templates/habit_template.dart';
+import '../../domain/templates/habit_template_catalog.dart';
 import 'editor_parts.dart';
+import 'icon_picker_grid.dart';
+import 'template_suggestions.dart';
 
-/// Section 01: title input, archetype card and icon matrix.
+/// Section 01: title input with template suggestions and the icon matrix.
 class IdentitySection extends StatefulWidget {
   const IdentitySection({
     super.key,
@@ -18,6 +20,7 @@ class IdentitySection extends StatefulWidget {
     required this.errorText,
     required this.onNameChanged,
     required this.onIconChanged,
+    this.onTemplatePicked,
   });
 
   final String name;
@@ -26,6 +29,9 @@ class IdentitySection extends StatefulWidget {
   final String? errorText;
   final ValueChanged<String> onNameChanged;
   final ValueChanged<String> onIconChanged;
+
+  /// Null disables suggestions (e.g. while editing an existing habit).
+  final ValueChanged<HabitTemplate>? onTemplatePicked;
 
   @override
   State<IdentitySection> createState() => _IdentitySectionState();
@@ -42,6 +48,16 @@ class _IdentitySectionState extends State<IdentitySection> {
     super.dispose();
   }
 
+  void _pick(HabitTemplate template) {
+    final name = template.nameFor(Localizations.localeOf(context).languageCode);
+    _controller.value = TextEditingValue(
+      text: name,
+      selection: TextSelection.collapsed(offset: name.length),
+    );
+    widget.onTemplatePicked!(template);
+    FocusScope.of(context).unfocus();
+  }
+
   void _clear() {
     _controller.clear();
     widget.onNameChanged('');
@@ -50,7 +66,6 @@ class _IdentitySectionState extends State<IdentitySection> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final archetype = Archetype.of(widget.iconName, l10n);
     final hasError = widget.errorText != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,8 +131,18 @@ class _IdentitySectionState extends State<IdentitySection> {
               style: AppTextStyles.labelMd.copyWith(color: AppColors.error),
             ),
           ),
-        const SizedBox(height: 10),
-        _ArchetypeCard(archetype: archetype, color: widget.color),
+        if (widget.onTemplatePicked != null)
+          ValueListenableBuilder(
+            valueListenable: _controller,
+            builder: (_, value, _) {
+              final matches = HabitTemplateCatalog.suggest(value.text);
+              if (matches.isEmpty) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: TemplateSuggestions(templates: matches, onPicked: _pick),
+              );
+            },
+          ),
         const SizedBox(height: 16),
         Row(
           children: [
@@ -135,95 +160,12 @@ class _IdentitySectionState extends State<IdentitySection> {
           ],
         ),
         const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final entry in HabitIcons.all.entries)
-              _IconTile(
-                icon: entry.value,
-                label: entry.key,
-                color: widget.color,
-                selected: entry.key == widget.iconName,
-                onTap: () => widget.onIconChanged(entry.key),
-              ),
-          ],
+        IconPickerGrid(
+          selected: widget.iconName,
+          color: widget.color,
+          onChanged: widget.onIconChanged,
         ),
       ],
-    );
-  }
-}
-
-class _ArchetypeCard extends StatelessWidget {
-  const _ArchetypeCard({required this.archetype, required this.color});
-
-  final Archetype archetype;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return EditorPanel(
-      accent: color,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            context.l10n.editorArchetype(archetype.name),
-            style: AppTextStyles.labelSm.copyWith(color: color),
-          ),
-          const SizedBox(height: 4),
-          Text(archetype.flavor, style: AppTextStyles.bodyMd),
-          const SizedBox(height: 4),
-          Text(
-            Archetype.mechanics(context.l10n),
-            style: AppTextStyles.labelSm.copyWith(color: AppColors.cyan),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _IconTile extends StatelessWidget {
-  const _IconTile({
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color color;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      selected: selected,
-      label: label,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: selected
-                ? color.withValues(alpha: 0.12)
-                : AppColors.surfaceRaised,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: selected ? color : AppColors.borderSubtle,
-              width: selected ? 2 : 1,
-            ),
-            boxShadow: selected ? AppGlow.soft(color) : null,
-          ),
-          child: Icon(icon, color: selected ? color : AppColors.textSecondary),
-        ),
-      ),
     );
   }
 }

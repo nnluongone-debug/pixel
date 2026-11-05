@@ -129,17 +129,21 @@ class CadenceSection extends StatelessWidget {
           ),
         ],
         const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
+        // One compact row: chips share the width and shrink their text.
+        Row(
           children: [
-            for (final option in HabitUnitOption.all)
-              EditorChip(
-                label: option.labelOf(l10n),
-                color: color,
-                selected: draft.isSelected(option),
-                onTap: () => onChanged(draft.withUnit(option)),
+            for (final option in HabitUnitOption.all) ...[
+              if (option != HabitUnitOption.all.first) const SizedBox(width: 6),
+              Expanded(
+                child: EditorChip(
+                  label: option.labelOf(l10n),
+                  color: color,
+                  horizontalPadding: 4,
+                  selected: draft.isSelected(option),
+                  onTap: () => onChanged(draft.withUnit(option)),
+                ),
               ),
+            ],
           ],
         ),
       ],

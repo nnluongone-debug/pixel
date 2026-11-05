@@ -51,9 +51,12 @@ dependencies:
   firebase_auth: ^6.7.0
   cloud_firestore: ^6.10.0
   cloud_functions: ^6.5.0
+  audioplayers: ^6.8.1
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  integration_test:
     sdk: flutter
 
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -64,6 +67,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   sqflite_common_ffi: ^2.4.3
   fake_cloud_firestore: ^4.3.0
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -71,6 +75,15 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   generate: true
+
+  # Original synthesized SFX (tool/sfx/generate_sfx.py), one folder per pack.
+  assets:
+    - assets/sounds/chiptune/
+    - assets/sounds/synthPop/
+    - assets/sounds/laserDrop/
+    - assets/sounds/crystalChime/
+    - assets/sounds/coinCascade/
+    - assets/sounds/cosmicWarp/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -107,3 +120,14 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# Launcher icons; regenerate with `dart run flutter_launcher_icons` after
+# `python3 tool/app_icon/generate_app_icon.py assets/app_icon`.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/app_icon/app_icon.png
+  remove_alpha_ios: true
+  adaptive_icon_background: "#0B0C10"
+  adaptive_icon_foreground: assets/app_icon/app_icon_foreground.png
+  min_sdk_android: 21

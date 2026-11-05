@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../providers/sound_providers.dart';
+import '../../../services/sound/sound_slot.dart';
 
 /// Square neon action button: outlined when idle, filled when [active],
 /// neutral grey when [muted] (not started). Every tap gives a light haptic,
-/// a click and a squash-and-bounce.
+/// a tap sound and a squash-and-bounce.
 class NeonActionButton extends StatefulWidget {
   const NeonActionButton({
     super.key,
@@ -13,15 +15,23 @@ class NeonActionButton extends StatefulWidget {
     required this.onTap,
     required this.child,
     this.onLongPress,
+    this.sound = SoundSlot.tap,
+    this.longPressSound = SoundSlot.undo,
     this.active = false,
     this.muted = false,
+    this.size = 40,
   });
 
   final Color color;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
+
+  /// Sound played on tap / long press, in place of the old system click.
+  final SoundSlot sound;
+  final SoundSlot longPressSound;
   final bool active;
   final bool muted;
+  final double size;
   final Widget child;
 
   @override
@@ -40,9 +50,9 @@ class _NeonActionButtonState extends State<NeonActionButton>
     TweenSequenceItem(tween: Tween(begin: 1.1, end: 1.0), weight: 40),
   ]).animate(CurvedAnimation(parent: _bounce, curve: Curves.easeOut));
 
-  void _press(VoidCallback action) {
+  void _press(VoidCallback action, SoundSlot sound) {
     HapticFeedback.lightImpact();
-    SystemSound.play(SystemSoundType.click);
+    SoundFx.play(context, sound);
     _bounce.forward(from: 0);
     action();
   }
@@ -65,18 +75,18 @@ class _NeonActionButtonState extends State<NeonActionButton>
     return ScaleTransition(
       scale: _scale,
       child: GestureDetector(
-        onTap: () => _press(widget.onTap),
+        onTap: () => _press(widget.onTap, widget.sound),
         onLongPress: widget.onLongPress == null
             ? null
-            : () => _press(widget.onLongPress!),
+            : () => _press(widget.onLongPress!, widget.longPressSound),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 220),
-          width: 40,
-          height: 40,
+          width: widget.size,
+          height: widget.size,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: active ? color : AppColors.surfaceHigh,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(widget.size / 4),
             border: Border.all(
               color: active
                   ? color
@@ -91,11 +101,12 @@ class _NeonActionButtonState extends State<NeonActionButton>
                 : AppGlow.soft(color),
           ),
           child: IconTheme(
-            data: IconThemeData(color: foreground, size: 22),
+            data: IconThemeData(color: foreground, size: widget.size * 0.55),
             child: DefaultTextStyle(
               style: AppTextStyles.labelLg.copyWith(
                 color: foreground,
                 fontWeight: FontWeight.w700,
+                fontSize: widget.size == 40 ? null : widget.size * 0.36,
               ),
               child: widget.child,
             ),

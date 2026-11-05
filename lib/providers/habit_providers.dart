@@ -73,7 +73,10 @@ class HabitsController extends AsyncNotifier<List<Habit>> {
     required String iconName,
     String unit = '',
     HabitSchedule schedule = HabitSchedule.daily,
-    int? reminderMinutes,
+    List<int>? reminderTimes,
+    int? reminderEvery,
+    int reminderFrom = Habit.defaultReminderFrom,
+    int reminderTo = Habit.defaultReminderTo,
   }) => _mutate(
     (repo) => repo.createHabit(
       name: name,
@@ -83,7 +86,10 @@ class HabitsController extends AsyncNotifier<List<Habit>> {
       iconName: iconName,
       unit: unit,
       schedule: schedule,
-      reminderMinutes: reminderMinutes,
+      reminderTimes: reminderTimes ?? const [],
+      reminderEvery: reminderEvery,
+      reminderFrom: reminderFrom,
+      reminderTo: reminderTo,
     ),
   );
 

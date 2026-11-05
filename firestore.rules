@@ -6,9 +6,18 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == uid;
     }
 
+    // Equipped skin and sound pack, mirrored from the app (ids only).
+    function validCosmetics(c) {
+      return c is map
+        && c.keys().hasOnly(['skin', 'sound', 'updatedAt'])
+        && c.skin in ['gameBoy', 'neonGlow', 'cyberpunk', 'gemstone', 'pureGold', 'nebula']
+        && c.sound in ['chiptune', 'synthPop', 'laserDrop', 'crystalChime', 'coinCascade', 'cosmicWarp']
+        && c.updatedAt is int;
+    }
+
     function validProfile() {
       let d = request.resource.data;
-      return d.keys().hasOnly(['email', 'name', 'birthYear', 'gender', 'address', 'updatedAt'])
+      return d.keys().hasOnly(['email', 'name', 'birthYear', 'gender', 'address', 'updatedAt', 'cosmetics'])
         && d.keys().hasAll(['email', 'updatedAt'])
         && d.email == request.auth.token.email
         && d.updatedAt is timestamp
@@ -16,7 +25,8 @@ service cloud.firestore {
         && (!('birthYear' in d) || d.birthYear == null
             || (d.birthYear is int && d.birthYear >= 1900 && d.birthYear <= request.time.year()))
         && (!('gender' in d) || d.gender in ['male', 'female', 'other', 'unspecified'])
-        && (!('address' in d) || (d.address is string && d.address.size() <= 160));
+        && (!('address' in d) || (d.address is string && d.address.size() <= 160))
+        && (!('cosmetics' in d) || validCosmetics(d.cosmetics));
     }
 
     // Synced docs mirror the app's SQLite rows (camelCase) plus updatedAt
@@ -36,7 +46,8 @@ service cloud.firestore {
       let d = request.resource.data;
       return isTombstone(docId) || (
         d.keys().hasOnly(['id', 'name', 'type', 'target', 'currentProgress',
-          'colorHex', 'iconName', 'unit', 'scheduleDays', 'reminderMinutes',
+          'colorHex', 'iconName', 'unit', 'scheduleDays', 'reminderMinutes', 'reminderTimes',
+          'reminderEvery', 'reminderFrom', 'reminderTo',
           'createdAt', 'progressDate', 'updatedAt', 'deleted', 'syncedAt'])
         && d.keys().hasAll(['id', 'name', 'type', 'target', 'updatedAt', 'deleted', 'syncedAt'])
         && d.syncedAt == request.time
@@ -50,6 +61,11 @@ service cloud.firestore {
         && (!('scheduleDays' in d) || (d.scheduleDays is int && d.scheduleDays >= 1 && d.scheduleDays <= 127))
         && (!('reminderMinutes' in d) || d.reminderMinutes == null
             || (d.reminderMinutes is int && d.reminderMinutes >= 0 && d.reminderMinutes <= 1439))
+        && (!('reminderTimes' in d) || (d.reminderTimes is string && d.reminderTimes.size() <= 40))
+        && (!('reminderEvery' in d) || d.reminderEvery == null
+            || (d.reminderEvery is int && d.reminderEvery >= 5 && d.reminderEvery <= 720))
+        && (!('reminderFrom' in d) || (d.reminderFrom is int && d.reminderFrom >= 0 && d.reminderFrom <= 1439))
+        && (!('reminderTo' in d) || (d.reminderTo is int && d.reminderTo >= 0 && d.reminderTo <= 1439))
       );
     }
 

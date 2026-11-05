@@ -10,6 +10,7 @@ import 'package:pixel_quest/providers/analytics_providers.dart';
 import 'package:pixel_quest/providers/locale_providers.dart';
 import 'package:pixel_quest/providers/sync_providers.dart';
 import 'package:pixel_quest/services/auth/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../support/localized_test_app.dart';
 
@@ -100,9 +101,12 @@ Future<void> pumpAccount(
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   final user = profile ?? UserProfile(email: testIdentity.email);
+  SharedPreferences.setMockInitialValues({});
+  final prefs = await SharedPreferences.getInstance();
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         firebaseAvailableProvider.overrideWithValue(firebase),
         authServiceProvider.overrideWithValue(auth ?? FakeAuthService()),
         accountIdentityProvider.overrideWithValue(identity),

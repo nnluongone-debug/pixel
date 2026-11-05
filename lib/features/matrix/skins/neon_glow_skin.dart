@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
+import 'brick_skin.dart';
 
-/// Canvas primitives for matrix slots and arcade bricks.
-abstract final class BrickPainter {
-  static const double radius = 2;
+/// Default skin: flat neon bricks with a soft glow halo.
+class NeonGlowSkin extends BrickSkin {
+  const NeonGlowSkin();
 
-  /// Empty slot: translucent dark fill with a thin dim outline.
-  static void paintSlot(Canvas canvas, Rect rect) {
+  @override
+  Color get panelColor => AppColors.surfaceLowest;
+
+  @override
+  Color get panelBorderColor => AppColors.outlineVariant.withValues(alpha: 0.2);
+
+  /// Translucent dark fill with a thin dim outline.
+  @override
+  void paintSlot(Canvas canvas, Rect rect) {
     final rrect = RRect.fromRectAndRadius(
       rect.deflate(0.5),
-      const Radius.circular(radius),
+      const Radius.circular(BrickSkin.radius),
     );
     canvas.drawRRect(rrect, Paint()..color = AppColors.matrixSlotFill);
     canvas.drawRRect(
@@ -22,17 +30,18 @@ abstract final class BrickPainter {
     );
   }
 
-  /// Flat neon brick with a soft glow halo.
-  ///
-  /// [glow] scales the halo (1 = resting, >1 = landing flash).
-  static void paintBrick(
+  @override
+  void paintBrick(
     Canvas canvas,
     Rect rect,
     Color color, {
     double opacity = 1,
     double glow = 1,
   }) {
-    final rrect = RRect.fromRectAndRadius(rect, const Radius.circular(radius));
+    final rrect = RRect.fromRectAndRadius(
+      rect,
+      const Radius.circular(BrickSkin.radius),
+    );
 
     if (glow > 0) {
       canvas.drawRRect(

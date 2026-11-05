@@ -30,11 +30,24 @@ class Habit {
     required this.createdAt,
     this.unit = '',
     this.schedule = HabitSchedule.daily,
-    this.reminderMinutes,
+    this.reminderTimes = const [],
+    this.reminderEvery,
+    this.reminderFrom = defaultReminderFrom,
+    this.reminderTo = defaultReminderTo,
     this.progressDate,
   });
 
   static const Object _keep = Object();
+
+  /// Most daily reminder times a habit may have.
+  static const int maxReminderTimes = 5;
+
+  /// Choices for "every N minutes" reminders.
+  static const List<int> reminderEveryChoices = [15, 30, 45, 60, 90, 120, 180];
+
+  /// Default repeat window: 08:00–22:00.
+  static const int defaultReminderFrom = 8 * 60;
+  static const int defaultReminderTo = 22 * 60;
 
   final String id;
   final String name;
@@ -54,8 +67,38 @@ class Habit {
   /// Weekdays the habit is due. Streaks skip days outside it.
   final HabitSchedule schedule;
 
-  /// Daily reminder as minutes after local midnight; null = no reminder.
-  final int? reminderMinutes;
+  /// Reminder times as minutes after local midnight, sorted and unique;
+  /// empty = no reminder.
+  final List<int> reminderTimes;
+
+  /// Repeat interval in minutes ("every N minutes"); null = use the fixed
+  /// [reminderTimes] instead.
+  final int? reminderEvery;
+
+  /// Repeat window, minutes after midnight (inclusive start and end).
+  final int reminderFrom;
+  final int reminderTo;
+
+  bool get hasReminder => reminderEvery != null || reminderTimes.isNotEmpty;
+
+  /// Every time of day a reminder fires: the repeat slots within the window
+  /// when [reminderEvery] is set, otherwise [reminderTimes].
+  List<int> get reminderSlots {
+    final every = reminderEvery;
+    if (every == null || every <= 0) return reminderTimes;
+    return [for (var m = reminderFrom; m <= reminderTo; m += every) m];
+  }
+
+  /// `480,1230` ↔ [480, 1230] for the `reminder_times` column.
+  static String encodeTimes(List<int> times) => times.join(',');
+
+  static List<int> decodeTimes(String? csv) {
+    if (csv == null || csv.isEmpty) return const [];
+    final times = {
+      for (final part in csv.split(',')) ?int.tryParse(part.trim()),
+    }.toList()..sort();
+    return times;
+  }
 
   /// `YYYY-MM-DD` day that [currentProgress] belongs to.
   final String? progressDate;
@@ -76,7 +119,10 @@ class Habit {
     String? iconName,
     String? unit,
     HabitSchedule? schedule,
-    Object? reminderMinutes = _keep,
+    List<int>? reminderTimes,
+    Object? reminderEvery = _keep,
+    int? reminderFrom,
+    int? reminderTo,
     String? progressDate,
   }) {
     return Habit(
@@ -89,9 +135,12 @@ class Habit {
       iconName: iconName ?? this.iconName,
       unit: unit ?? this.unit,
       schedule: schedule ?? this.schedule,
-      reminderMinutes: identical(reminderMinutes, _keep)
-          ? this.reminderMinutes
-          : reminderMinutes as int?,
+      reminderTimes: reminderTimes ?? this.reminderTimes,
+      reminderEvery: identical(reminderEvery, _keep)
+          ? this.reminderEvery
+          : reminderEvery as int?,
+      reminderFrom: reminderFrom ?? this.reminderFrom,
+      reminderTo: reminderTo ?? this.reminderTo,
       createdAt: createdAt,
       progressDate: progressDate ?? this.progressDate,
     );
@@ -107,7 +156,10 @@ class Habit {
     'icon_name': iconName,
     'unit': unit,
     'schedule_days': schedule.mask,
-    'reminder_minutes': reminderMinutes,
+    'reminder_times': encodeTimes(reminderTimes),
+    'reminder_every': reminderEvery,
+    'reminder_from': reminderFrom,
+    'reminder_to': reminderTo,
     'created_at': createdAt.toUtc().toIso8601String(),
     'progress_date': progressDate,
   };
@@ -122,7 +174,16 @@ class Habit {
     iconName: map['icon_name']! as String,
     unit: map['unit'] as String? ?? '',
     schedule: HabitSchedule(map['schedule_days'] as int? ?? 0x7F),
-    reminderMinutes: map['reminder_minutes'] as int?,
+    reminderEvery: map['reminder_every'] as int?,
+    reminderFrom: map['reminder_from'] as int? ?? defaultReminderFrom,
+    reminderTo: map['reminder_to'] as int? ?? defaultReminderTo,
+    reminderTimes: switch (decodeTimes(map['reminder_times'] as String?)) {
+      // Rows from before multi-time reminders only have the old column.
+      final t when t.isEmpty && map['reminder_minutes'] is int => [
+        map['reminder_minutes']! as int,
+      ],
+      final t => t,
+    },
     createdAt: DateTime.parse(map['created_at']! as String).toLocal(),
     progressDate: map['progress_date'] as String?,
   );

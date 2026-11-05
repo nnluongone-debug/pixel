@@ -15,6 +15,7 @@ abstract final class HomeWidgetSnapshot {
   /// [checkIns] must cover at least the last [towerDays] days ending today.
   /// [habitStreaks] maps habit id to its current streak (missing = 0).
   /// [lang] is the app's language code; the widget picks its labels by it.
+  /// [skin] is the equipped brick theme id (`ThemeId.name`).
   /// [unitLabel] localizes stored unit codes (defaults to the code itself).
   static Map<String, Object?> build({
     required DateTime now,
@@ -23,6 +24,7 @@ abstract final class HomeWidgetSnapshot {
     required UserStats stats,
     Map<String, int> habitStreaks = const {},
     String lang = 'en',
+    String skin = 'neonGlow',
     String Function(String code) unitLabel = _identity,
   }) {
     final todayKey = DateKeys.fromDate(now);
@@ -50,6 +52,7 @@ abstract final class HomeWidgetSnapshot {
     return {
       'version': version,
       'lang': lang,
+      'skin': skin,
       'generatedAt': now.toUtc().toIso8601String(),
       'today': todayKey,
       'level': stats.currentLevel,

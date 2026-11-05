@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
+import '../core/utils/letter_avatar_color.dart';
 
-/// "■ GRID VIEW" title with a pulsing mint pixel and the profile button.
+/// "■ GRID VIEW" title with a pulsing mint pixel and the profile button,
+/// which shows the player's initial (colored by letter) once signed in.
 class NeoTopBar extends StatefulWidget implements PreferredSizeWidget {
-  const NeoTopBar({super.key, required this.title, this.onProfileTap});
+  const NeoTopBar({
+    super.key,
+    required this.title,
+    this.initial,
+    this.onProfileTap,
+  });
 
   final String title;
+
+  /// Signed-in player's initial; null shows the guest person icon.
+  final String? initial;
   final VoidCallback? onProfileTap;
 
   @override
@@ -31,6 +41,10 @@ class _NeoTopBarState extends State<NeoTopBar>
 
   @override
   Widget build(BuildContext context) {
+    final initial = widget.initial;
+    final color = initial == null
+        ? AppColors.mint
+        : LetterAvatarColor.of(initial);
     return Container(
       decoration: const BoxDecoration(
         color: Color(0xE611131A),
@@ -74,17 +88,28 @@ class _NeoTopBarState extends State<NeoTopBar>
                     height: 36,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.mint.withValues(alpha: 0.15),
+                      color: color.withValues(alpha: 0.15),
                       border: Border.all(
-                        color: AppColors.primary.withValues(alpha: 0.4),
+                        color: initial == null
+                            ? AppColors.primary.withValues(alpha: 0.4)
+                            : color,
                       ),
-                      boxShadow: AppGlow.soft(AppColors.mint),
+                      boxShadow: AppGlow.soft(color),
                     ),
-                    child: const Icon(
-                      Icons.person_outline,
-                      color: AppColors.primary,
-                      size: 20,
-                    ),
+                    alignment: Alignment.center,
+                    child: initial == null
+                        ? const Icon(
+                            Icons.person_outline,
+                            color: AppColors.primary,
+                            size: 20,
+                          )
+                        : Text(
+                            initial,
+                            style: AppTextStyles.headlineSm.copyWith(
+                              color: color,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                   ),
                 ),
               ],

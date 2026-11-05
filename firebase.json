@@ -4,7 +4,7 @@
       "android": {
         "default": {
           "projectId": "habitpixel-309ee",
-          "appId": "1:932125585595:android:e47639d503b902ef84f99e",
+          "appId": "1:932125585595:android:b3ab42f3fa22d47584f99e",
           "fileOutput": "android/app/google-services.json"
         }
       },
@@ -20,7 +20,7 @@
         "lib/firebase_options.dart": {
           "projectId": "habitpixel-309ee",
           "configurations": {
-            "android": "1:932125585595:android:e47639d503b902ef84f99e",
+            "android": "1:932125585595:android:b3ab42f3fa22d47584f99e",
             "ios": "1:932125585595:ios:c153178e61d32a3b84f99e"
           }
         }
@@ -40,5 +40,12 @@
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "public": "store/web",
+    "cleanUrls": true,
+    "ignore": [
+      "**/.*"
+    ]
   }
 }

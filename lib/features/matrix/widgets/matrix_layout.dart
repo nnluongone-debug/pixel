@@ -40,16 +40,15 @@ class MatrixCalendar {
   );
 }
 
-/// Pixel geometry for the grid area (labels excluded).
+/// Pixel geometry for the grid area (labels excluded). Cells are square.
 class MatrixGeometry {
   MatrixGeometry({
     required this.width,
     required this.columns,
     required this.rows,
     this.cellGap = 4,
-    this.brickAspect = 0.62,
   }) : cellWidth = (width - cellGap * (columns - 1)) / columns {
-    cellHeight = cellWidth * brickAspect;
+    cellHeight = cellWidth;
     height = rows * cellHeight + (rows - 1) * cellGap;
   }
 
@@ -57,7 +56,6 @@ class MatrixGeometry {
   final int columns;
   final int rows;
   final double cellGap;
-  final double brickAspect;
   final double cellWidth;
   late final double cellHeight;
   late final double height;

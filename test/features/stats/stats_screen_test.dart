@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pixel_quest/providers/locale_providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pixel_quest/data/database/app_database.dart';
 import 'package:pixel_quest/data/models/habit.dart';
@@ -55,9 +57,12 @@ void main() {
         seedNow = DateTime(2026, 10, day, 8);
         await habits.setCompleted(water.id, completed: true);
       }
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
       container = ProviderContainer(
         overrides: [
           databaseProvider.overrideWithValue(db),
+          sharedPreferencesProvider.overrideWithValue(prefs),
           analyticsClockProvider.overrideWithValue(() => screenNow),
         ],
       );
@@ -133,9 +138,12 @@ void main() {
         factory: databaseFactoryFfiNoIsolate,
         path: inMemoryDatabasePath,
       );
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
       container = ProviderContainer(
         overrides: [
           databaseProvider.overrideWithValue(db),
+          sharedPreferencesProvider.overrideWithValue(prefs),
           analyticsClockProvider.overrideWithValue(() => screenNow),
         ],
       );

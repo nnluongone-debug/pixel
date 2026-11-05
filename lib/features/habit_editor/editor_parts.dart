@@ -89,12 +89,14 @@ class EditorChip extends StatelessWidget {
     required this.selected,
     required this.onTap,
     this.color = AppColors.mint,
+    this.horizontalPadding = 14,
   });
 
   final String label;
   final bool selected;
   final VoidCallback onTap;
   final Color color;
+  final double horizontalPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +109,7 @@ class EditorChip extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         child: Container(
           constraints: const BoxConstraints(minHeight: 36),
-          padding: const EdgeInsets.symmetric(horizontal: 14),
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: selected ? color.withValues(alpha: 0.12) : null,
@@ -116,10 +118,13 @@ class EditorChip extends StatelessWidget {
               color: selected ? color : AppColors.borderActive,
             ),
           ),
-          child: Text(
-            label,
-            style: AppTextStyles.labelMd.copyWith(
-              color: selected ? color : AppColors.textSecondary,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              style: AppTextStyles.labelMd.copyWith(
+                color: selected ? color : AppColors.textSecondary,
+              ),
             ),
           ),
         ),
@@ -165,6 +170,73 @@ class StepperButton extends StatelessWidget {
             color: enabled ? color : AppColors.textMuted,
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Two-or-more option segmented control in the editor's neon style.
+class EditorSegmented<T> extends StatelessWidget {
+  const EditorSegmented({
+    super.key,
+    required this.options,
+    required this.selected,
+    required this.onChanged,
+    this.color = AppColors.mint,
+  });
+
+  final Map<T, String> options;
+  final T selected;
+  final ValueChanged<T> onChanged;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceLowest,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.borderSubtle),
+      ),
+      child: Row(
+        children: [
+          for (final entry in options.entries)
+            Expanded(
+              child: Semantics(
+                button: true,
+                selected: entry.key == selected,
+                child: GestureDetector(
+                  onTap: () => onChanged(entry.key),
+                  behavior: HitTestBehavior.opaque,
+                  child: Container(
+                    height: 34,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: entry.key == selected
+                          ? color.withValues(alpha: 0.14)
+                          : null,
+                      borderRadius: BorderRadius.circular(10),
+                      border: entry.key == selected
+                          ? Border.all(color: color.withValues(alpha: 0.6))
+                          : null,
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        entry.value,
+                        style: AppTextStyles.labelMd.copyWith(
+                          color: entry.key == selected
+                              ? color
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

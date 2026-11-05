@@ -6,8 +6,10 @@ import '../../providers/account_providers.dart';
 import 'account_frame.dart';
 import 'account_identity.dart';
 import 'account_parts.dart';
+import '../locker/locker_entry_card.dart';
 import 'profile_badges_section.dart';
 import 'profile_form.dart';
+import 'profile_delete_account_button.dart';
 import 'profile_sign_out_button.dart';
 import 'profile_sync_card.dart';
 
@@ -33,11 +35,15 @@ class ProfileScreen extends ConsumerWidget {
             initial: value,
           ),
           const SizedBox(height: 28),
+          const LockerEntryCard(),
+          const SizedBox(height: 28),
           const ProfileBadgesSection(),
           const SizedBox(height: 28),
           const ProfileSyncCard(),
           const SizedBox(height: 28),
           const ProfileSignOutButton(),
+          const SizedBox(height: 12),
+          const ProfileDeleteAccountButton(),
         ],
       );
     } else if (profile.hasError) {

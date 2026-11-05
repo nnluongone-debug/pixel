@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pixel_quest/features/matrix/models/check_in_block.dart';
 import 'package:pixel_quest/features/matrix/models/matrix_summary.dart';
 import 'package:pixel_quest/features/matrix/widgets/matrix_layout.dart';
+import 'package:pixel_quest/features/matrix/widgets/pixel_matrix_grid.dart';
 
 CheckInBlock block(String id, String date, int stack) => CheckInBlock(
   id: id,
@@ -74,15 +75,47 @@ void main() {
     expect(g.columnLeft(9) + g.cellWidth, closeTo(300, 0.001));
   });
 
-  test('summary reports filled share of 150 cells and tallest column', () {
+  test('cells are square', () {
+    final g = MatrixGeometry(width: 370, columns: 10, rows: 12);
+    expect(g.cellHeight, g.cellWidth);
+    expect(g.height, closeTo(12 * g.cellWidth + 11 * g.cellGap, 0.001));
+  });
+
+  test('rows follow the habit count with a floor of 10', () {
+    List<CheckInBlock> day(String date, int n) => [
+      for (var i = 0; i < n; i++) block('$date-$i', date, i),
+    ];
+    expect(PixelMatrixGrid.rowsFor(const []), 10);
+    expect(PixelMatrixGrid.rowsFor(day('2026-10-10', 7)), 10);
+    expect(PixelMatrixGrid.rowsFor(day('2026-10-10', 10)), 10);
+    // Grows only with checked-off bricks on one day, not with total bricks.
+    expect(
+      PixelMatrixGrid.rowsFor([
+        ...day('2026-10-09', 9),
+        ...day('2026-10-10', 9),
+      ]),
+      10,
+    );
+    expect(PixelMatrixGrid.rowsFor(day('2026-10-10', 12)), 12);
+  });
+
+  test('summary scales with the row count', () {
+    final blocks = [for (var i = 0; i < 6; i++) block('t$i', '2026-10-10', i)];
+    final summary = MatrixSummary.of(blocks, today, rows: 12);
+    expect(summary.totalCells, 120);
+    expect(summary.clearedPercent, 5); // 6 / 120
+    expect(summary.capPercent, 50); // 6 / 12
+  });
+
+  test('summary reports filled share of 100 cells and tallest column', () {
     final blocks = [
       for (var i = 0; i < 9; i++) block('t$i', '2026-10-10', i),
       block('y', '2026-10-09', 0),
     ];
     final summary = MatrixSummary.of(blocks, today);
     expect(summary.filled, 10);
-    expect(summary.clearedPercent, 7); // 10 / 150
+    expect(summary.clearedPercent, 10); // 10 / 100
     expect(summary.tallest, 9);
-    expect(summary.capPercent, 60); // 9 / 15
+    expect(summary.capPercent, 90); // 9 / 10
   });
 }

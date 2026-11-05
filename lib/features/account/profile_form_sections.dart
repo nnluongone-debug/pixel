@@ -67,7 +67,7 @@ class BirthYearField extends StatelessWidget {
   );
 }
 
-/// Segmented gender chooser.
+/// Segmented gender chooser, all options on one row.
 class GenderChips extends StatelessWidget {
   const GenderChips({super.key, required this.value, required this.onChanged});
 
@@ -77,16 +77,19 @@ class GenderChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+    return Row(
       children: [
-        for (final g in Gender.values)
-          EditorChip(
-            label: _genderLabel(l10n, g),
-            selected: g == value,
-            onTap: () => onChanged(g),
+        for (final (i, g) in Gender.values.indexed) ...[
+          if (i > 0) const SizedBox(width: 6),
+          Expanded(
+            child: EditorChip(
+              label: _genderLabel(l10n, g),
+              selected: g == value,
+              horizontalPadding: 6,
+              onTap: () => onChanged(g),
+            ),
           ),
+        ],
       ],
     );
   }

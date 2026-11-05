@@ -37,6 +37,15 @@ class SyncService {
   static const _linkedUidKey = 'sync.linkedUid';
   static const _keyPrefix = 'sync.';
 
+  /// Per-player unlock bookkeeping (seen / NEW badges and themes); it must
+  /// not leak to the next account on this device.
+  static const _unlockKeys = [
+    'seen_badges',
+    'seen_cosmetics',
+    'new_badges',
+    'new_cosmetics',
+  ];
+
   final String uid;
   final FirebaseFirestore _fs;
   final Database db;
@@ -147,7 +156,10 @@ class SyncService {
         ...UserStats.initial.toMap(),
       }, conflictAlgorithm: ConflictAlgorithm.replace);
     });
-    for (final key in prefs.getKeys().where((k) => k.startsWith(_keyPrefix))) {
+    final keys = prefs.getKeys().where(
+      (k) => k.startsWith(_keyPrefix) || _unlockKeys.contains(k),
+    );
+    for (final key in keys.toList()) {
       await prefs.remove(key);
     }
   }

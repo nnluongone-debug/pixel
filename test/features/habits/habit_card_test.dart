@@ -6,10 +6,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pixel_quest/data/database/app_database.dart';
 import 'package:pixel_quest/data/models/habit.dart';
 import 'package:pixel_quest/features/habits/widgets/habit_list_view.dart';
+import 'package:pixel_quest/providers/locale_providers.dart';
 import 'package:pixel_quest/providers/repository_providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../../support/localized_test_app.dart';
+import '../../support/silent_sound_service.dart';
 
 void main() {
   sqfliteFfiInit();
@@ -32,13 +35,19 @@ void main() {
     // Real in-memory SQLite; DB futures need real async outside fake time.
     late Database db;
     late ProviderContainer container;
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     await tester.runAsync(() async {
       db = await AppDatabase.open(
         factory: databaseFactoryFfiNoIsolate,
         path: inMemoryDatabasePath,
       );
       container = ProviderContainer(
-        overrides: [databaseProvider.overrideWithValue(db)],
+        overrides: [
+          databaseProvider.overrideWithValue(db),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          silentSoundOverride,
+        ],
       );
       await container
           .read(habitRepositoryProvider)

@@ -1,13 +1,19 @@
+import 'dart:math' show max;
+
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_theme.dart';
-import '../../../data/repositories/check_in_repository.dart';
+import '../../../providers/sound_providers.dart';
+import '../../../services/sound/sound_slot.dart';
 import '../models/check_in_block.dart';
+import '../skins/brick_skin.dart';
+import '../skins/neon_glow_skin.dart';
 import 'drop_effect.dart';
 import 'matrix_axis_labels.dart';
 import 'matrix_effects_painter.dart';
 import 'matrix_grid_painter.dart';
 import 'matrix_layout.dart';
+import 'matrix_overlay_painter.dart';
+import 'overlay_clock.dart';
 
 /// Rolling pixel matrix: [columns] day columns ending today, each a tower of
 /// [rows] slots; completed habits stack as bricks from the bottom up.
@@ -20,11 +26,23 @@ class PixelMatrixGrid extends StatefulWidget {
     super.key,
     required this.blocks,
     this.columns = MatrixCalendar.defaultColumns,
-    this.rows = defaultRows,
+    this.rows = minRows,
     this.today,
+    this.skin = const NeonGlowSkin(),
   });
 
-  static const int defaultRows = CheckInRepository.matrixRows;
+  /// Shortest grid. It only grows once a day actually holds more bricks.
+  static const int minRows = 10;
+
+  /// Rows needed to show [blocks]: the tallest day's brick count, at least
+  /// [minRows]. Habits that exist but aren't checked off don't add rows.
+  static int rowsFor(Iterable<CheckInBlock> blocks) {
+    final perDay = <String, int>{};
+    for (final b in blocks) {
+      perDay[b.dateKey] = (perDay[b.dateKey] ?? 0) + 1;
+    }
+    return max(minRows, perDay.values.fold(0, max));
+  }
 
   final List<CheckInBlock> blocks;
   final int columns;
@@ -32,6 +50,10 @@ class PixelMatrixGrid extends StatefulWidget {
 
   /// Overrides "now" (tests, previews). Defaults to the device clock.
   final DateTime? today;
+
+  /// Brick style. Changing it restyles in place; the grid keeps its state, so
+  /// running drop animations survive.
+  final BrickSkin skin;
 
   @override
   State<PixelMatrixGrid> createState() => _PixelMatrixGridState();
@@ -42,11 +64,16 @@ class _PixelMatrixGridState extends State<PixelMatrixGrid>
   static const Duration _stagger = Duration(milliseconds: 140);
   static const int _maxBatchMs = 4000;
   static const double _padding = 6;
+  static final double _fallMs = DropEffect.fall.inMilliseconds.toDouble();
 
   late MatrixCalendar _calendar;
   late MatrixPlacement _placement;
   List<DropEffect> _effects = const [];
   Set<String> _hiddenIds = const {};
+
+  /// Drives animated skins; stopped for static skins, reduce-motion and
+  /// while the grid is offstage (TickerMode disabled).
+  final OverlayClock _overlayClock = OverlayClock();
 
   @override
   void initState() {
@@ -55,8 +82,27 @@ class _PixelMatrixGridState extends State<PixelMatrixGrid>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncOverlayClock();
+  }
+
+  void _syncOverlayClock() {
+    final run =
+        widget.skin.animated &&
+        !MediaQuery.disableAnimationsOf(context) &&
+        TickerMode.valuesOf(context).enabled;
+    if (run) {
+      _overlayClock.start(widget.skin);
+    } else {
+      _overlayClock.stop();
+    }
+  }
+
+  @override
   void didUpdateWidget(PixelMatrixGrid old) {
     super.didUpdateWidget(old);
+    if (old.skin != widget.skin) _syncOverlayClock();
     _rebuildPlacement();
 
     final oldIds = {for (final b in old.blocks) b.id};
@@ -109,6 +155,14 @@ class _PixelMatrixGridState extends State<PixelMatrixGrid>
       controller: controller,
       delay: delay,
     );
+    // Land sound at the end of the fall. Only drops create effects, so the
+    // initial build is silent.
+    var landed = false;
+    controller.addListener(() {
+      if (landed || !mounted || effect.elapsedMs < _fallMs) return;
+      landed = true;
+      SoundFx.play(context, SoundSlot.brickLand);
+    });
     controller.addStatusListener((status) {
       if (status != AnimationStatus.completed || !mounted) return;
       setState(() {
@@ -130,6 +184,7 @@ class _PixelMatrixGridState extends State<PixelMatrixGrid>
 
   @override
   void dispose() {
+    _overlayClock.dispose();
     for (final effect in _effects) {
       effect.controller.dispose();
     }
@@ -155,26 +210,56 @@ class _PixelMatrixGridState extends State<PixelMatrixGrid>
             Container(
               padding: const EdgeInsets.all(_padding),
               decoration: BoxDecoration(
-                color: AppColors.surfaceLowest,
+                color: widget.skin.panelColor,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: AppColors.outlineVariant.withValues(alpha: 0.2),
-                ),
+                border: Border.all(color: widget.skin.panelBorderColor),
               ),
-              child: RepaintBoundary(
-                child: CustomPaint(
-                  size: Size(geometry.width, geometry.height),
-                  painter: MatrixGridPainter(
-                    geometry: geometry,
-                    calendar: _calendar,
-                    placement: _placement,
-                    hiddenIds: _hiddenIds,
+              child: Stack(
+                children: [
+                  RepaintBoundary(
+                    child: CustomPaint(
+                      size: Size(geometry.width, geometry.height),
+                      painter: MatrixGridPainter(
+                        skin: widget.skin,
+                        geometry: geometry,
+                        calendar: _calendar,
+                        placement: _placement,
+                        hiddenIds: _hiddenIds,
+                      ),
+                    ),
                   ),
-                  foregroundPainter: MatrixEffectsPainter(
-                    geometry: geometry,
-                    effects: _effects,
+                  // Own layer: drop animations repaint only this, never the
+                  // cached static layer.
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: RepaintBoundary(
+                        child: CustomPaint(
+                          painter: MatrixEffectsPainter(
+                            skin: widget.skin,
+                            geometry: geometry,
+                            effects: _effects,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  if (_overlayClock.running)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: RepaintBoundary(
+                          child: CustomPaint(
+                            painter: MatrixOverlayPainter(
+                              skin: widget.skin,
+                              geometry: geometry,
+                              placement: _placement,
+                              hiddenIds: _hiddenIds,
+                              time: _overlayClock.time,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ],

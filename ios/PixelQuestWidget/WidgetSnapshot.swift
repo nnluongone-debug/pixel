@@ -36,6 +36,9 @@ struct WidgetSnapshot: Codable {
     let version: Int
     /// App language code ("en" / "vi"); nil in older snapshots.
     var lang: String? = nil
+
+    /// Equipped skin id (`CosmeticId.name`); nil in older snapshots.
+    var skin: String? = nil
     let generatedAt: String
     var today: String
     let level: Int

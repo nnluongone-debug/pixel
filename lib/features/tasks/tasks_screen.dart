@@ -10,8 +10,9 @@ import '../../data/models/habit.dart';
 import '../../providers/habit_providers.dart';
 import '../habit_editor/habit_editor_sheet.dart';
 import '../habits/widgets/habit_card_parts.dart';
+import 'swipe_to_reveal_delete.dart';
 
-/// Tasks tab: every habit with its cadence; tap to edit, trash to delete.
+/// Tasks tab: every habit with its cadence; tap to edit, swipe left to delete.
 class TasksScreen extends ConsumerWidget {
   const TasksScreen({super.key});
 
@@ -71,6 +72,10 @@ class TasksScreen extends ConsumerWidget {
             l10n.tasksHeader(list.length),
             style: AppTextStyles.labelMd.copyWith(color: AppColors.mint),
           ),
+          if (list.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(l10n.tasksSwipeHint, style: AppTextStyles.labelSm),
+          ],
           const SizedBox(height: 12),
           if (list.isEmpty)
             Padding(
@@ -84,10 +89,14 @@ class TasksScreen extends ConsumerWidget {
           for (final habit in list)
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: _TaskRow(
-                habit: habit,
-                onEdit: () => HabitEditorSheet.show(context, habit: habit),
+              child: SwipeToRevealDelete(
+                key: ValueKey(habit.id),
+                label: l10n.tasksDeleteTooltip,
                 onDelete: () => _confirmDelete(context, ref, habit),
+                child: _TaskRow(
+                  habit: habit,
+                  onEdit: () => HabitEditorSheet.show(context, habit: habit),
+                ),
               ),
             ),
         ],
@@ -97,26 +106,16 @@ class TasksScreen extends ConsumerWidget {
 }
 
 class _TaskRow extends StatelessWidget {
-  const _TaskRow({
-    required this.habit,
-    required this.onEdit,
-    required this.onDelete,
-  });
+  const _TaskRow({required this.habit, required this.onEdit});
 
   final Habit habit;
   final VoidCallback onEdit;
-  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
     final color = AppColors.fromHex(habit.colorHex);
     final l10n = context.l10n;
-    final goal = switch (habit.type) {
-      HabitType.counter =>
-        '${habit.target} ${l10n.unitLabel(habit.unit)}'.trim(),
-      HabitType.checklist => l10n.tasksGoalCheck,
-      HabitType.timer => '${habit.target} ${l10n.unitMinutes}',
-    };
+    final goal = l10n.goalLabel(habit.type, habit.unit, habit.target);
     return Material(
       color: AppColors.surface,
       borderRadius: BorderRadius.circular(18),
@@ -146,14 +145,7 @@ class _TaskRow extends StatelessWidget {
                   ],
                 ),
               ),
-              IconButton(
-                tooltip: l10n.tasksDeleteTooltip,
-                onPressed: onDelete,
-                icon: const Icon(
-                  Icons.delete_outline,
-                  color: AppColors.textMuted,
-                ),
-              ),
+              const Icon(Icons.chevron_right, color: AppColors.textMuted),
             ],
           ),
         ),

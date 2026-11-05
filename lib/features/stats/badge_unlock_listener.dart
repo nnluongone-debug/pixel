@@ -1,9 +1,12 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/l10n/l10n.dart';
 import '../../domain/analytics/pixel_badge.dart';
 import '../../providers/analytics_providers.dart';
+import '../../providers/celebration_providers.dart';
 import '../../providers/locale_providers.dart';
+import '../../providers/new_unlocks_provider.dart';
 import 'widgets/badge_unlock_dialog.dart';
 
 /// Pops a "NEW BADGE!" dialog the first time each badge unlocks, from any
@@ -51,13 +54,35 @@ class _BadgeUnlockListenerState extends ConsumerState<BadgeUnlockListener> {
     final seen = stored.toSet();
     final fresh = unlocked.where((d) => !seen.contains(d.id.name)).toList();
     if (fresh.isEmpty) return;
+    // Claimed before any await, so an overlapping check can't celebrate
+    // the same unlock twice.
     _showing = true;
     try {
+      await ref.read(newUnlocksProvider.notifier).add(UnlockKind.badge, [
+        for (final d in fresh) d.id.name,
+      ]);
+      if (!ref.read(lastLocalProgressProvider.notifier).isRecent) {
+        // Arrived by sync / reinstall / demo, not earned just now: no popups,
+        // only the NEW markers and a short toast.
+        await prefs.setStringList(BadgeUnlockListener.seenKey, [
+          ...seen,
+          for (final d in fresh) d.id.name,
+        ]);
+        if (mounted) {
+          ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+            SnackBar(
+              content: Text(context.l10n.unlockToastBadges(fresh.length)),
+            ),
+          );
+        }
+        return;
+      }
+      final queue = ref.read(celebrationQueueProvider);
       for (final badge in fresh) {
         seen.add(badge.id.name);
         await prefs.setStringList(BadgeUnlockListener.seenKey, seen.toList());
         if (!mounted) return;
-        await BadgeUnlockDialog.show(context, badge);
+        await queue.run(() => BadgeUnlockDialog.show(context, badge));
       }
     } finally {
       _showing = false;
@@ -66,6 +91,7 @@ class _BadgeUnlockListenerState extends ConsumerState<BadgeUnlockListener> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(lastLocalProgressProvider); // start tracking from app start
     ref.listen(badgesProvider, (_, next) => _check(next));
     return widget.child;
   }

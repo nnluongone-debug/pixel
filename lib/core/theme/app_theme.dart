@@ -35,11 +35,22 @@ abstract final class AppColors {
   static const Color amber = Color(0xFFF9CA24); // Streaks, reading
   static const Color lavender = Color(0xFFA29BFE); // Focus, intellect
   static const Color rose = Color(0xFFFF7675); // Strength, creativity
+  static const Color orange = Color(0xFFFF9F43); // Energy, cooking
+  static const Color pink = Color(0xFFFF4D94); // Love, relationships
 
   static const Color error = Color(0xFFFFB4AB);
+  static const Color deleteRed = Color(0xFFFF3B30); // iOS destructive red
 
   /// Colors a user can pick for a habit, in display order.
-  static const List<Color> habitPalette = [mint, cyan, amber, lavender, rose];
+  static const List<Color> habitPalette = [
+    mint,
+    cyan,
+    amber,
+    lavender,
+    rose,
+    orange,
+    pink,
+  ];
 
   /// Parses `#RRGGBB` or `#AARRGGBB`; falls back to [mint] on bad input.
   static Color fromHex(String hex) {

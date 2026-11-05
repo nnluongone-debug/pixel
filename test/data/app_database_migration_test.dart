@@ -162,6 +162,12 @@ void main() {
       options: OpenDatabaseOptions(
         version: 4,
         onCreate: (db, _) async {
+          // Minimal v4 habits table: later migrations alter it.
+          await db.execute(
+            'CREATE TABLE habits (id TEXT PRIMARY KEY, '
+            'reminder_minutes INTEGER)',
+          );
+          await db.insert('habits', {'id': 'h', 'reminder_minutes': 1230});
           await db.execute(
             'CREATE TABLE sync_outbox (entity TEXT NOT NULL, '
             'entity_id TEXT NOT NULL, op TEXT NOT NULL, '
@@ -180,5 +186,13 @@ void main() {
     final db = await AppDatabase.open(factory: factory, path: path);
     addTearDown(db.close);
     expect((await db.query('sync_outbox')).single['quarantined'], 0);
+    // v6 copies the single reminder into the multi-time column.
+    expect((await db.query('habits')).single['reminder_times'], '1230');
+    // v7 adds the repeat window with its defaults.
+    final habit = (await db.query('habits')).single;
+    expect(
+      [habit['reminder_every'], habit['reminder_from'], habit['reminder_to']],
+      [null, 480, 1320],
+    );
   });
 }

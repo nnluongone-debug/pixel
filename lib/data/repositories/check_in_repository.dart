@@ -17,9 +17,9 @@ class CheckInRepository {
 
   static const _table = 'check_ins';
 
-  /// Visible matrix size: 10 day columns x 15 rows.
+  /// Day columns in the matrix. Its height grows with the habit count (one
+  /// brick per habit per day), so there is no fixed row limit here.
   static const int matrixColumns = 10;
-  static const int matrixRows = 15;
 
   final Database _db;
   final Clock _clock;
@@ -89,10 +89,7 @@ class CheckInRepository {
       [endDay - columns + 1, endDay],
     );
     if (rows.length < columns) return 0;
-    return rows
-        .map((r) => r['height']! as int)
-        .reduce((a, b) => a < b ? a : b)
-        .clamp(0, matrixRows);
+    return rows.map((r) => r['height']! as int).reduce((a, b) => a < b ? a : b);
   }
 
   // ---- Writes (run inside the caller's transaction) ----

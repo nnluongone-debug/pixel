@@ -101,8 +101,338 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Pixel Quest'**
+  /// **'Habit Tracker - Pixel'**
   String get appTitle;
+
+  /// No description provided for @editorModeTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'SPECIFIC TIMES'**
+  String get editorModeTimes;
+
+  /// No description provided for @editorModeRepeat.
+  ///
+  /// In en, this message translates to:
+  /// **'REPEAT'**
+  String get editorModeRepeat;
+
+  /// No description provided for @editorEvery.
+  ///
+  /// In en, this message translates to:
+  /// **'EVERY'**
+  String get editorEvery;
+
+  /// No description provided for @editorFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'FROM'**
+  String get editorFrom;
+
+  /// No description provided for @editorTo.
+  ///
+  /// In en, this message translates to:
+  /// **'TO'**
+  String get editorTo;
+
+  /// No description provided for @editorEveryMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m'**
+  String editorEveryMinutes(int count);
+
+  /// No description provided for @editorRepeatSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'≈ {count} prompts a day ({first} → {last})'**
+  String editorRepeatSummary(int count, String first, String last);
+
+  /// No description provided for @editorErrWindow.
+  ///
+  /// In en, this message translates to:
+  /// **'End time must be after start time'**
+  String get editorErrWindow;
+
+  /// No description provided for @configEveryRow.
+  ///
+  /// In en, this message translates to:
+  /// **'every {interval} · {from}–{to}'**
+  String configEveryRow(String interval, String from, String to);
+
+  /// No description provided for @configSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled {count} prompts, next at {when}'**
+  String configSummary(int count, String when);
+
+  /// No description provided for @configSummaryNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No prompts scheduled'**
+  String get configSummaryNone;
+
+  /// No description provided for @editorAddTime.
+  ///
+  /// In en, this message translates to:
+  /// **'+ ADD TIME'**
+  String get editorAddTime;
+
+  /// No description provided for @editorRemoveTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {time}'**
+  String editorRemoveTime(String time);
+
+  /// No description provided for @lockerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'BRICK THEMES'**
+  String get lockerTitle;
+
+  /// No description provided for @lockerVaultTag.
+  ///
+  /// In en, this message translates to:
+  /// **'VAULT'**
+  String get lockerVaultTag;
+
+  /// No description provided for @lockerActiveSkin.
+  ///
+  /// In en, this message translates to:
+  /// **'ACTIVE SKIN'**
+  String get lockerActiveSkin;
+
+  /// No description provided for @lockerCollection.
+  ///
+  /// In en, this message translates to:
+  /// **'THEME COLLECTION ({count} TIERS)'**
+  String lockerCollection(int count);
+
+  /// No description provided for @lockerTierLine.
+  ///
+  /// In en, this message translates to:
+  /// **'TIER {tier} • {rarity}'**
+  String lockerTierLine(int tier, String rarity);
+
+  /// No description provided for @lockerRarityCommon.
+  ///
+  /// In en, this message translates to:
+  /// **'COMMON'**
+  String get lockerRarityCommon;
+
+  /// No description provided for @lockerRarityRare.
+  ///
+  /// In en, this message translates to:
+  /// **'RARE'**
+  String get lockerRarityRare;
+
+  /// No description provided for @lockerRarityEpic.
+  ///
+  /// In en, this message translates to:
+  /// **'EPIC'**
+  String get lockerRarityEpic;
+
+  /// No description provided for @lockerRarityLegendary.
+  ///
+  /// In en, this message translates to:
+  /// **'LEGENDARY'**
+  String get lockerRarityLegendary;
+
+  /// No description provided for @lockerRarityMythic.
+  ///
+  /// In en, this message translates to:
+  /// **'MYTHIC'**
+  String get lockerRarityMythic;
+
+  /// No description provided for @lockerRarityCosmic.
+  ///
+  /// In en, this message translates to:
+  /// **'COSMIC'**
+  String get lockerRarityCosmic;
+
+  /// No description provided for @lockerUnlockedMark.
+  ///
+  /// In en, this message translates to:
+  /// **'UNLOCKED'**
+  String get lockerUnlockedMark;
+
+  /// No description provided for @lockerThemeGameBoy.
+  ///
+  /// In en, this message translates to:
+  /// **'Game Boy DMG-01'**
+  String get lockerThemeGameBoy;
+
+  /// No description provided for @lockerThemeNeonGlow.
+  ///
+  /// In en, this message translates to:
+  /// **'Arcade Neon Glow'**
+  String get lockerThemeNeonGlow;
+
+  /// No description provided for @lockerThemeCyberpunk.
+  ///
+  /// In en, this message translates to:
+  /// **'Cyber Glitch & CRT'**
+  String get lockerThemeCyberpunk;
+
+  /// No description provided for @lockerThemeGemstone.
+  ///
+  /// In en, this message translates to:
+  /// **'Pixel Gemstones'**
+  String get lockerThemeGemstone;
+
+  /// No description provided for @lockerThemePureGold.
+  ///
+  /// In en, this message translates to:
+  /// **'Gold Relic & Obsidian'**
+  String get lockerThemePureGold;
+
+  /// No description provided for @lockerThemeNebula.
+  ///
+  /// In en, this message translates to:
+  /// **'Starlight Nebula'**
+  String get lockerThemeNebula;
+
+  /// No description provided for @lockerEquip.
+  ///
+  /// In en, this message translates to:
+  /// **'EQUIP'**
+  String get lockerEquip;
+
+  /// No description provided for @lockerActive.
+  ///
+  /// In en, this message translates to:
+  /// **'ACTIVE'**
+  String get lockerActive;
+
+  /// No description provided for @lockerStreakProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{current}/{goal} D'**
+  String lockerStreakProgress(int current, int goal);
+
+  /// No description provided for @lockerLevelChip.
+  ///
+  /// In en, this message translates to:
+  /// **'LVL {level}'**
+  String lockerLevelChip(int level);
+
+  /// No description provided for @lockerPro.
+  ///
+  /// In en, this message translates to:
+  /// **'PRO'**
+  String get lockerPro;
+
+  /// No description provided for @lockerReqStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires {days}-Day Streak'**
+  String lockerReqStreak(int days);
+
+  /// No description provided for @lockerReqLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires Hero LVL {level}'**
+  String lockerReqLevel(int level);
+
+  /// No description provided for @lockerReqLevelOrStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires Hero LVL {level} or {days}-Day Streak'**
+  String lockerReqLevelOrStreak(int level, int days);
+
+  /// No description provided for @lockerComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'COMING SOON'**
+  String get lockerComingSoon;
+
+  /// No description provided for @lockerEntrySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{unlocked}/{total} UNLOCKED · SKINS & SOUND PACKS'**
+  String lockerEntrySubtitle(int unlocked, int total);
+
+  /// No description provided for @lockerNewTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW THEME!'**
+  String get lockerNewTheme;
+
+  /// No description provided for @lockerEquipNow.
+  ///
+  /// In en, this message translates to:
+  /// **'EQUIP NOW'**
+  String get lockerEquipNow;
+
+  /// No description provided for @lockerLater.
+  ///
+  /// In en, this message translates to:
+  /// **'LATER'**
+  String get lockerLater;
+
+  /// No description provided for @soundCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'SOUND / ÂM THANH'**
+  String get soundCardTitle;
+
+  /// No description provided for @soundEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound effects'**
+  String get soundEnabled;
+
+  /// No description provided for @soundVolume.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get soundVolume;
+
+  /// No description provided for @soundPackLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound pack: {name}'**
+  String soundPackLabel(String name);
+
+  /// No description provided for @soundPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'▶ PREVIEW'**
+  String get soundPreview;
+
+  /// No description provided for @soundPackChiptune.
+  ///
+  /// In en, this message translates to:
+  /// **'4-Bit Chiptune Bleep'**
+  String get soundPackChiptune;
+
+  /// No description provided for @soundPackSynthPop.
+  ///
+  /// In en, this message translates to:
+  /// **'8-Bit Synth Pop & Coin SFX'**
+  String get soundPackSynthPop;
+
+  /// No description provided for @soundPackLaserDrop.
+  ///
+  /// In en, this message translates to:
+  /// **'Laser Drop SFX'**
+  String get soundPackLaserDrop;
+
+  /// No description provided for @soundPackCrystalChime.
+  ///
+  /// In en, this message translates to:
+  /// **'Crystal Bell Chime'**
+  String get soundPackCrystalChime;
+
+  /// No description provided for @soundPackCoinCascade.
+  ///
+  /// In en, this message translates to:
+  /// **'Coin Cascade SFX'**
+  String get soundPackCoinCascade;
+
+  /// No description provided for @soundPackCosmicWarp.
+  ///
+  /// In en, this message translates to:
+  /// **'Cosmic Warp Ambient'**
+  String get soundPackCosmicWarp;
 
   /// No description provided for @configDemoTitle.
   ///
@@ -131,7 +461,7 @@ abstract class AppLocalizations {
   /// No description provided for @configDemoConfirmBody.
   ///
   /// In en, this message translates to:
-  /// **'All habits, bricks and XP on this device are replaced by 25 sample habits. This can\'t be undone.'**
+  /// **'All habits, bricks and XP on this device are replaced by 12 sample habits. This can\'t be undone.'**
   String get configDemoConfirmBody;
 
   /// No description provided for @configDemoConfirm.
@@ -529,6 +859,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'SIGN OUT ANYWAY'**
   String get accountSignOutAnyway;
+
+  /// No description provided for @accountDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'DELETE ACCOUNT'**
+  String get accountDelete;
+
+  /// No description provided for @accountDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'DELETE ACCOUNT?'**
+  String get accountDeleteTitle;
+
+  /// No description provided for @accountDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account, profile, habits, bricks and XP are permanently deleted from the cloud and this device. This cannot be undone.'**
+  String get accountDeleteBody;
+
+  /// No description provided for @accountDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'DELETE FOREVER'**
+  String get accountDeleteConfirm;
+
+  /// No description provided for @accountDeleteOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to the internet to delete your account.'**
+  String get accountDeleteOffline;
 
   /// No description provided for @accountCancel.
   ///
@@ -1076,95 +1436,41 @@ abstract class AppLocalizations {
   /// **'Read 20 Pages'**
   String get editorTitleHint;
 
+  /// No description provided for @editorTemplatesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'TEMPLATES · TAP TO FILL'**
+  String get editorTemplatesLabel;
+
+  /// No description provided for @tasksSwipeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe left on a habit to delete it'**
+  String get tasksSwipeHint;
+
+  /// No description provided for @editorIconsMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More icons'**
+  String get editorIconsMore;
+
+  /// No description provided for @editorIconsLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Fewer icons'**
+  String get editorIconsLess;
+
+  /// No description provided for @detailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This habit no longer exists.'**
+  String get detailNotFound;
+
   /// No description provided for @editorClearTitle.
   ///
   /// In en, this message translates to:
   /// **'Clear title'**
   String get editorClearTitle;
-
-  /// No description provided for @editorArchetype.
-  ///
-  /// In en, this message translates to:
-  /// **'ARCHETYPE: {name}'**
-  String editorArchetype(String name);
-
-  /// No description provided for @editorArchScholar.
-  ///
-  /// In en, this message translates to:
-  /// **'SCHOLAR'**
-  String get editorArchScholar;
-
-  /// No description provided for @editorArchScholarFlavor.
-  ///
-  /// In en, this message translates to:
-  /// **'Intellect, one tile at a time'**
-  String get editorArchScholarFlavor;
-
-  /// No description provided for @editorArchWarrior.
-  ///
-  /// In en, this message translates to:
-  /// **'WARRIOR'**
-  String get editorArchWarrior;
-
-  /// No description provided for @editorArchWarriorFlavor.
-  ///
-  /// In en, this message translates to:
-  /// **'Strength, stacked daily'**
-  String get editorArchWarriorFlavor;
-
-  /// No description provided for @editorArchHydro.
-  ///
-  /// In en, this message translates to:
-  /// **'HYDRO'**
-  String get editorArchHydro;
-
-  /// No description provided for @editorArchHydroFlavor.
-  ///
-  /// In en, this message translates to:
-  /// **'Flow state, glass by glass'**
-  String get editorArchHydroFlavor;
-
-  /// No description provided for @editorArchMonk.
-  ///
-  /// In en, this message translates to:
-  /// **'MONK'**
-  String get editorArchMonk;
-
-  /// No description provided for @editorArchMonkFlavor.
-  ///
-  /// In en, this message translates to:
-  /// **'Calm is a streak too'**
-  String get editorArchMonkFlavor;
-
-  /// No description provided for @editorArchHacker.
-  ///
-  /// In en, this message translates to:
-  /// **'HACKER'**
-  String get editorArchHacker;
-
-  /// No description provided for @editorArchHackerFlavor.
-  ///
-  /// In en, this message translates to:
-  /// **'Ship a little every day'**
-  String get editorArchHackerFlavor;
-
-  /// No description provided for @editorArchStriker.
-  ///
-  /// In en, this message translates to:
-  /// **'STRIKER'**
-  String get editorArchStriker;
-
-  /// No description provided for @editorArchStrikerFlavor.
-  ///
-  /// In en, this message translates to:
-  /// **'Aim, hit, repeat'**
-  String get editorArchStrikerFlavor;
-
-  /// No description provided for @editorStreakBonus.
-  ///
-  /// In en, this message translates to:
-  /// **'+{xp} XP per streak day (max +{max})'**
-  String editorStreakBonus(int xp, int max);
 
   /// No description provided for @editorIconMatrix.
   ///
@@ -1195,30 +1501,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Color {hex}'**
   String editorColorSemantics(String hex);
-
-  /// No description provided for @editorTBlock.
-  ///
-  /// In en, this message translates to:
-  /// **'T-BLOCK SHAPE'**
-  String get editorTBlock;
-
-  /// No description provided for @editorActive.
-  ///
-  /// In en, this message translates to:
-  /// **'ACTIVE'**
-  String get editorActive;
-
-  /// No description provided for @editorXpPerTile.
-  ///
-  /// In en, this message translates to:
-  /// **'+{xp} XP / TILE'**
-  String editorXpPerTile(int xp);
-
-  /// No description provided for @editorField.
-  ///
-  /// In en, this message translates to:
-  /// **'10×15 FIELD'**
-  String get editorField;
 
   /// No description provided for @editorCadenceTag.
   ///
@@ -1394,17 +1676,11 @@ abstract class AppLocalizations {
   /// **'ALLOW'**
   String get configAllow;
 
-  /// No description provided for @configSendTest.
+  /// No description provided for @configScheduledCount.
   ///
   /// In en, this message translates to:
-  /// **'SEND TEST PROMPT'**
-  String get configSendTest;
-
-  /// No description provided for @configScheduled.
-  ///
-  /// In en, this message translates to:
-  /// **'SCHEDULED PROMPTS'**
-  String get configScheduled;
+  /// **'{count, plural, =1{1 HABIT} other{{count} HABITS}}'**
+  String configScheduledCount(int count);
 
   /// No description provided for @configNoReminders.
   ///
@@ -1417,18 +1693,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notifications are blocked. Enable them in system settings.'**
   String get configBlocked;
-
-  /// No description provided for @configAllowFirst.
-  ///
-  /// In en, this message translates to:
-  /// **'Allow notifications first.'**
-  String get configAllowFirst;
-
-  /// No description provided for @configTestFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not send the prompt.'**
-  String get configTestFailed;
 
   /// No description provided for @configLanguage.
   ///
@@ -1460,12 +1724,6 @@ abstract class AppLocalizations {
   /// **'{name} — {target} today'**
   String reminderBodyQuotaNoUnit(String name, int target);
 
-  /// No description provided for @reminderTest.
-  ///
-  /// In en, this message translates to:
-  /// **'Test prompt — reminders are working.'**
-  String get reminderTest;
-
   /// No description provided for @gridHudYear.
   ///
   /// In en, this message translates to:
@@ -1493,8 +1751,8 @@ abstract class AppLocalizations {
   /// No description provided for @gridMatrixTitle.
   ///
   /// In en, this message translates to:
-  /// **'MATRIX GRID • 10x15'**
-  String get gridMatrixTitle;
+  /// **'MATRIX GRID • 10x{rows}'**
+  String gridMatrixTitle(int rows);
 
   /// No description provided for @gridMatrixCleared.
   ///
@@ -1711,6 +1969,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'CANCEL'**
   String get commonCancel;
+
+  /// No description provided for @commonNew.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW'**
+  String get commonNew;
+
+  /// No description provided for @unlockToastBadges.
+  ///
+  /// In en, this message translates to:
+  /// **'🏅 {count, plural, =1{New badge unlocked!} other{{count} new badges unlocked!}} See Stats.'**
+  String unlockToastBadges(int count);
+
+  /// No description provided for @unlockToastThemes.
+  ///
+  /// In en, this message translates to:
+  /// **'🎨 {count, plural, =1{New brick theme unlocked!} other{{count} new brick themes unlocked!}} See Config → Locker.'**
+  String unlockToastThemes(int count);
 
   /// No description provided for @commonDelete.
   ///

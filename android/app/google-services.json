@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:932125585595:android:b3ab42f3fa22d47584f99e",
+        "android_client_info": {
+          "package_name": "com.nnluong.pixelquest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEO0DnQ7fpEAmpzzrjMZchmzCSwcjzCak"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:932125585595:android:e47639d503b902ef84f99e",
         "android_client_info": {
           "package_name": "com.pixelquest.pixel_quest"

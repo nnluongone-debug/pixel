@@ -30,3 +30,11 @@ final reminderSyncProvider = Provider<void>((ref) {
 final notificationsEnabledProvider = FutureProvider<bool>(
   (ref) => ref.watch(reminderServiceProvider).areNotificationsEnabled(),
 );
+
+/// Real pending-prompt data for Config; refreshes when habits or the
+/// language (which triggers a reschedule) change.
+final reminderSummaryProvider = FutureProvider<ReminderSummary>((ref) {
+  ref.watch(habitsControllerProvider);
+  ref.watch(appStringsProvider);
+  return ref.watch(reminderServiceProvider).summary();
+});

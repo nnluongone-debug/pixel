@@ -95,6 +95,12 @@ class AuthService {
 
   Future<void> signOut() => _auth.signOut();
 
+  /// Deletes the account and all cloud data server-side, then signs out.
+  Future<void> deleteAccount() async {
+    await _call('deleteAccount', const {});
+    await _auth.signOut();
+  }
+
   Future<Map<String, Object?>> _call(
     String name,
     Map<String, Object?> payload,
