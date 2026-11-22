@@ -2197,6 +2197,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Describe the bug or idea here:'**
   String get feedbackEmailHint;
+
+  /// No description provided for @shareMatrixTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Share my matrix'**
+  String get shareMatrixTooltip;
+
+  /// No description provided for @shareMatrixTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'MY HABIT MATRIX'**
+  String get shareMatrixTitle;
+
+  /// No description provided for @shareMatrixSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% cleared · {date}'**
+  String shareMatrixSubtitle(int percent, String date);
+
+  /// No description provided for @shareMatrixTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Build habits one pixel brick at a time · Free on Google Play'**
+  String get shareMatrixTagline;
+
+  /// No description provided for @shareMatrixText.
+  ///
+  /// In en, this message translates to:
+  /// **'Building my habits one pixel brick at a time 🧱 Try Habit Tracker - Pixel: {link}'**
+  String shareMatrixText(String link);
+
+  /// No description provided for @shareMatrixError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t create the image. Please try again.'**
+  String get shareMatrixError;
+
+  /// No description provided for @configUsageStatsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share anonymous usage stats'**
+  String get configUsageStatsTitle;
+
+  /// No description provided for @configUsageStatsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Helps us see which features work. Habit names and anything you type are never sent.'**
+  String get configUsageStatsBody;
 }
 
 class _AppLocalizationsDelegate

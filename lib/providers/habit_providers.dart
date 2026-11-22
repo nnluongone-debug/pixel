@@ -9,6 +9,7 @@ import '../data/models/progress_update.dart';
 import '../data/models/user_stats.dart';
 import '../data/repositories/habit_repository.dart';
 import '../features/habits/focus_timer_controller.dart';
+import 'growth_providers.dart';
 import 'repository_providers.dart';
 
 final userStatsProvider = FutureProvider<UserStats>(
@@ -77,21 +78,39 @@ class HabitsController extends AsyncNotifier<List<Habit>> {
     int? reminderEvery,
     int reminderFrom = Habit.defaultReminderFrom,
     int reminderTo = Habit.defaultReminderTo,
-  }) => _mutate(
-    (repo) => repo.createHabit(
-      name: name,
-      type: type,
-      target: target,
-      colorHex: colorHex,
-      iconName: iconName,
-      unit: unit,
-      schedule: schedule,
-      reminderTimes: reminderTimes ?? const [],
-      reminderEvery: reminderEvery,
-      reminderFrom: reminderFrom,
-      reminderTo: reminderTo,
-    ),
-  );
+  }) async {
+    final habit = await _mutate(
+      (repo) => repo.createHabit(
+        name: name,
+        type: type,
+        target: target,
+        colorHex: colorHex,
+        iconName: iconName,
+        unit: unit,
+        schedule: schedule,
+        reminderTimes: reminderTimes ?? const [],
+        reminderEvery: reminderEvery,
+        reminderFrom: reminderFrom,
+        reminderTo: reminderTo,
+      ),
+    );
+    unawaited(
+      ref
+          .read(usageAnalyticsProvider)
+          .habitCreated(
+            type: habit.type.name,
+            schedule: _scheduleTag(habit.schedule),
+            hasReminder: habit.hasReminder,
+          ),
+    );
+    return habit;
+  }
+
+  static String _scheduleTag(HabitSchedule schedule) {
+    if (schedule == HabitSchedule.daily) return 'daily';
+    if (schedule == HabitSchedule.weekdays) return 'weekdays';
+    return 'custom';
+  }
 
   Future<ProgressUpdate> edit(Habit habit) =>
       _mutate((repo) => repo.updateHabit(habit));
@@ -113,8 +132,27 @@ class HabitsController extends AsyncNotifier<List<Habit>> {
   Future<T> _mutate<T>(Future<T> Function(HabitRepository repo) action) async {
     final result = await action(ref.read(habitRepositoryProvider));
     _refreshAll();
-    if (result is ProgressUpdate) ref.read(progressEventsProvider).add(result);
+    if (result is ProgressUpdate) {
+      ref.read(progressEventsProvider).add(result);
+      _logProgress(result);
+    }
     return result;
+  }
+
+  void _logProgress(ProgressUpdate update) {
+    final analytics = ref.read(usageAnalyticsProvider);
+    if (update.placedCheckIn != null) {
+      unawaited(
+        analytics.habitCompleted(
+          habitId: update.habit.id,
+          type: update.habit.type.name,
+          dayKey: DateKeys.fromDate(DateTime.now()),
+        ),
+      );
+    }
+    if (update.leveledUp) {
+      unawaited(analytics.levelUp(update.stats.currentLevel));
+    }
   }
 
   /// Re-reads everything; call on app resume and at local midnight.

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,6 +7,7 @@ import '../../core/l10n/l10n.dart';
 import '../../domain/analytics/pixel_badge.dart';
 import '../../providers/analytics_providers.dart';
 import '../../providers/celebration_providers.dart';
+import '../../providers/growth_providers.dart';
 import '../../providers/locale_providers.dart';
 import '../../providers/new_unlocks_provider.dart';
 import 'widgets/badge_unlock_dialog.dart';
@@ -78,12 +81,17 @@ class _BadgeUnlockListenerState extends ConsumerState<BadgeUnlockListener> {
         return;
       }
       final queue = ref.read(celebrationQueueProvider);
+      final analytics = ref.read(usageAnalyticsProvider);
+      final reviews = ref.read(reviewPrompterProvider);
       for (final badge in fresh) {
         seen.add(badge.id.name);
         await prefs.setStringList(BadgeUnlockListener.seenKey, seen.toList());
+        unawaited(analytics.badgeUnlocked(badge.id.name));
         if (!mounted) return;
         await queue.run(() => BadgeUnlockDialog.show(context, badge));
       }
+      // A freshly earned badge is a happy moment: a good time to ask.
+      await queue.run(() => reviews.maybeAsk(trigger: 'badge'));
     } finally {
       _showing = false;
     }

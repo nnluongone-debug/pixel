@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_theme.dart';
 import '../../providers/app_info_providers.dart';
+import '../../providers/growth_providers.dart';
 import '../../providers/onboarding_providers.dart';
 import '../../services/feedback_service.dart';
 
@@ -95,6 +96,8 @@ class ConfigFeedbackCard extends ConsumerWidget {
               ),
             ),
           ),
+          const SizedBox(height: 12),
+          const _UsageStatsToggle(),
           if (info != null) ...[
             const SizedBox(height: 12),
             Center(
@@ -108,6 +111,41 @@ class ConfigFeedbackCard extends ConsumerWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+/// Opt-out for anonymous usage analytics (see privacy policy).
+class _UsageStatsToggle extends ConsumerWidget {
+  const _UsageStatsToggle();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final enabled = ref.watch(usageAnalyticsEnabledProvider);
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.configUsageStatsTitle, style: AppTextStyles.labelMd),
+              const SizedBox(height: 2),
+              Text(
+                l10n.configUsageStatsBody,
+                style: AppTextStyles.bodySm.copyWith(
+                  color: AppColors.textMuted,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        Switch(
+          value: enabled,
+          onChanged: ref.read(usageAnalyticsEnabledProvider.notifier).set,
+        ),
+      ],
     );
   }
 }

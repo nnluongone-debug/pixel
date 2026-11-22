@@ -11,6 +11,7 @@ import 'data/database/app_database.dart';
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/account_providers.dart';
+import 'providers/growth_providers.dart';
 import 'providers/home_widget_providers.dart';
 import 'providers/locale_providers.dart';
 import 'providers/onboarding_providers.dart';
@@ -25,16 +26,33 @@ Future<void> main() async {
   final db = await AppDatabase.open();
   final prefs = await SharedPreferences.getInstance();
   await markExistingUsersOnboarded(prefs, db);
+  final container = ProviderContainer(
+    overrides: [
+      databaseProvider.overrideWithValue(db),
+      sharedPreferencesProvider.overrideWithValue(prefs),
+      firebaseAvailableProvider.overrideWithValue(firebaseReady),
+    ],
+  );
+  await _initGrowth(container);
   runApp(
-    ProviderScope(
-      overrides: [
-        databaseProvider.overrideWithValue(db),
-        sharedPreferencesProvider.overrideWithValue(prefs),
-        firebaseAvailableProvider.overrideWithValue(firebaseReady),
-      ],
+    UncontrolledProviderScope(
+      container: container,
       child: const PixelQuestApp(),
     ),
   );
+}
+
+/// Applies the stored analytics opt-out and records the first launch for
+/// the review prompt. Failures only cost telemetry, never the app start.
+Future<void> _initGrowth(ProviderContainer container) async {
+  try {
+    await container
+        .read(usageAnalyticsProvider)
+        .setEnabled(container.read(usageAnalyticsEnabledProvider));
+    await container.read(reviewPrompterProvider).markFirstSeen();
+  } catch (e) {
+    debugPrint('Growth init failed: $e');
+  }
 }
 
 /// Accounts and cloud sync need Firebase; without it (no network on first
