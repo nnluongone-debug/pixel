@@ -367,5 +367,13 @@
   "feedbackNoMailApp": "Không tìm thấy ứng dụng email. Hãy gửi tới {email}",
   "feedbackCopy": "SAO CHÉP",
   "feedbackEmailSubject": "Góp ý",
-  "feedbackEmailHint": "Mô tả lỗi hoặc ý tưởng tại đây:"
+  "feedbackEmailHint": "Mô tả lỗi hoặc ý tưởng tại đây:",
+  "shareMatrixTooltip": "Chia sẻ ma trận",
+  "shareMatrixTitle": "MA TRẬN THÓI QUEN CỦA TÔI",
+  "shareMatrixSubtitle": "Đã lấp {percent}% · {date}",
+  "shareMatrixTagline": "Xây thói quen từng viên gạch pixel · Miễn phí trên Google Play",
+  "shareMatrixText": "Mình đang xây thói quen từng viên gạch pixel 🧱 Thử Habit Tracker - Pixel nhé: {link}",
+  "shareMatrixError": "Không tạo được ảnh. Vui lòng thử lại.",
+  "configUsageStatsTitle": "Chia sẻ thống kê sử dụng ẩn danh",
+  "configUsageStatsBody": "Giúp chúng tôi biết tính năng nào hữu ích. Tên thói quen và nội dung bạn nhập không bao giờ được gửi đi."
 }

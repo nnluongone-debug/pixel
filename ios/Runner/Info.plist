@@ -82,6 +82,14 @@
 	<!-- home_widget owns the pixelquest:// scheme; keep Flutter's router out. -->
 	<key>FlutterDeepLinkingEnabled</key>
 	<false/>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Save your habit matrix image to Photos.</string>
+	<key>GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS</key>
+	<false/>
+	<key>FIREBASE_ANALYTICS_COLLECTION_ENABLED</key>
+	<false/>
+	<key>GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED</key>
+	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>mailto</string>

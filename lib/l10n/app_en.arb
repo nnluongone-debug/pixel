@@ -437,5 +437,15 @@
   "@feedbackNoMailApp": {"placeholders": {"email": {"type": "String"}}},
   "feedbackCopy": "COPY",
   "feedbackEmailSubject": "Feedback",
-  "feedbackEmailHint": "Describe the bug or idea here:"
+  "feedbackEmailHint": "Describe the bug or idea here:",
+  "shareMatrixTooltip": "Share my matrix",
+  "shareMatrixTitle": "MY HABIT MATRIX",
+  "shareMatrixSubtitle": "{percent}% cleared · {date}",
+  "@shareMatrixSubtitle": {"placeholders": {"percent": {"type": "int"}, "date": {"type": "String"}}},
+  "shareMatrixTagline": "Build habits one pixel brick at a time · Free on Google Play",
+  "shareMatrixText": "Building my habits one pixel brick at a time 🧱 Try Habit Tracker - Pixel: {link}",
+  "@shareMatrixText": {"placeholders": {"link": {"type": "String"}}},
+  "shareMatrixError": "Couldn't create the image. Please try again.",
+  "configUsageStatsTitle": "Share anonymous usage stats",
+  "configUsageStatsBody": "Helps us see which features work. Habit names and anything you type are never sent."
 }

@@ -12,8 +12,9 @@ import '../../matrix/models/check_in_block.dart';
 import '../../matrix/models/matrix_summary.dart';
 import '../../matrix/skins/brick_skin.dart';
 import '../../matrix/widgets/pixel_matrix_grid.dart';
+import '../share/matrix_share_action.dart';
 import 'matrix_rows_panel.dart';
-import 'pulse_dot.dart';
+import 'matrix_canvas_parts.dart';
 
 /// The centerpiece card: HUD header, the 10x18 brick grid, base/cap footer
 /// and the rows/legend panel, framed with four neon corner pixels.
@@ -67,17 +68,33 @@ class MatrixCanvasCard extends ConsumerWidget {
               ),
             ),
           ),
-          const _Corner(top: true, left: true, color: AppColors.mint),
-          const _Corner(top: true, left: false, color: AppColors.cyan),
-          const _Corner(top: false, left: true, color: AppColors.lavender),
-          const _Corner(top: false, left: false, color: AppColors.mint),
+          const MatrixCanvasCorner(
+            top: true,
+            left: true,
+            color: AppColors.mint,
+          ),
+          const MatrixCanvasCorner(
+            top: true,
+            left: false,
+            color: AppColors.cyan,
+          ),
+          const MatrixCanvasCorner(
+            top: false,
+            left: true,
+            color: AppColors.lavender,
+          ),
+          const MatrixCanvasCorner(
+            top: false,
+            left: false,
+            color: AppColors.mint,
+          ),
         ],
       ),
     );
   }
 }
 
-class _Body extends StatelessWidget {
+class _Body extends ConsumerStatefulWidget {
   const _Body({required this.blocks, required this.skin, required this.rows});
 
   final List<CheckInBlock> blocks;
@@ -85,136 +102,57 @@ class _Body extends StatelessWidget {
   final BrickSkin skin;
 
   @override
+  ConsumerState<_Body> createState() => _BodyState();
+}
+
+class _BodyState extends ConsumerState<_Body> {
+  /// Wraps grid + footer: the part captured for the share image.
+  final _shareKey = GlobalKey();
+  bool _sharing = false;
+
+  Future<void> _share(int clearedPercent) async {
+    if (_sharing) return;
+    setState(() => _sharing = true);
+    try {
+      await MatrixShareAction.share(
+        context: context,
+        ref: ref,
+        boundaryKey: _shareKey,
+        clearedPercent: clearedPercent,
+      );
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final summary = MatrixSummary.of(blocks, DateTime.now(), rows: rows);
+    final rows = widget.rows;
+    final summary = MatrixSummary.of(widget.blocks, DateTime.now(), rows: rows);
     return Column(
       children: [
-        _Header(rows: rows, clearedPercent: summary.clearedPercent),
+        MatrixCanvasHeader(
+          rows: rows,
+          clearedPercent: summary.clearedPercent,
+          onShare: _sharing ? null : () => _share(summary.clearedPercent),
+        ),
         const SizedBox(height: 8),
-        PixelMatrixGrid(blocks: blocks, skin: skin, rows: rows),
-        _Footer(summary: summary),
+        RepaintBoundary(
+          key: _shareKey,
+          child: Column(
+            children: [
+              PixelMatrixGrid(
+                blocks: widget.blocks,
+                skin: widget.skin,
+                rows: rows,
+              ),
+              MatrixCanvasFooter(summary: summary),
+            ],
+          ),
+        ),
         const SizedBox(height: 4),
         const MatrixRowsPanel(),
       ],
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  const _Header({required this.rows, required this.clearedPercent});
-
-  final int rows;
-  final int clearedPercent;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceLow.withValues(alpha: 0.9),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: AppColors.outlineVariant.withValues(alpha: 0.4),
-        ),
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.videogame_asset_outlined,
-            size: 16,
-            color: AppColors.primary,
-          ),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              context.l10n.gridMatrixTitle(rows),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.labelSm.copyWith(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0.8,
-              ),
-            ),
-          ),
-          Text(
-            context.l10n.gridMatrixCleared(clearedPercent),
-            style: AppTextStyles.labelSm.copyWith(color: AppColors.cyan),
-          ),
-          const SizedBox(width: 8),
-          const PulseDot(size: 6),
-        ],
-      ),
-    );
-  }
-}
-
-class _Footer extends StatelessWidget {
-  const _Footer({required this.summary});
-
-  final MatrixSummary summary;
-
-  @override
-  Widget build(BuildContext context) {
-    final muted = AppTextStyles.labelSm.copyWith(
-      fontSize: 8,
-      color: AppColors.textMuted.withValues(alpha: 0.7),
-      fontWeight: FontWeight.w500,
-    );
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-      child: Row(
-        children: [
-          Container(
-            width: 4,
-            height: 4,
-            decoration: BoxDecoration(
-              color: AppColors.outlineVariant.withValues(alpha: 0.5),
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 4),
-          Text(context.l10n.gridMatrixBase(summary.rows), style: muted),
-          const Spacer(),
-          Text('${summary.tallest}/${summary.rows}', style: muted),
-          const SizedBox(width: 8),
-          Text(
-            context.l10n.gridMatrixCap(summary.capPercent),
-            style: muted.copyWith(
-              color: AppColors.primary.withValues(alpha: 0.7),
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// 6px neon pixel pinned to a card corner.
-class _Corner extends StatelessWidget {
-  const _Corner({required this.top, required this.left, required this.color});
-
-  final bool top;
-  final bool left;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      top: top ? 6 : null,
-      bottom: top ? null : 6,
-      left: left ? 6 : null,
-      right: left ? null : 6,
-      child: Container(
-        width: 6,
-        height: 6,
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(1),
-          boxShadow: AppGlow.soft(color),
-        ),
-      ),
     );
   }
 }

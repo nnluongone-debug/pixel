@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,6 +7,7 @@ import '../../core/l10n/l10n.dart';
 import '../../domain/cosmetics/theme_catalog.dart';
 import '../../providers/celebration_providers.dart';
 import '../../providers/cosmetics_providers.dart';
+import '../../providers/growth_providers.dart';
 import '../../providers/locale_providers.dart';
 import '../../providers/new_unlocks_provider.dart';
 import 'cosmetic_unlock_dialog.dart';
@@ -77,12 +80,15 @@ class _ListenerState extends ConsumerState<CosmeticUnlockListener> {
         return;
       }
       final queue = ref.read(celebrationQueueProvider);
+      final analytics = ref.read(usageAnalyticsProvider);
+      final reviews = ref.read(reviewPrompterProvider);
       for (final item in fresh) {
         seen.add(item.id.name);
         await prefs.setStringList(
           CosmeticUnlockListener.seenKey,
           seen.toList(),
         );
+        unawaited(analytics.themeUnlocked(item.id.name));
         if (!mounted) return;
         final equip = await queue.run(
           () => CosmeticUnlockDialog.show(context, item),
@@ -90,6 +96,8 @@ class _ListenerState extends ConsumerState<CosmeticUnlockListener> {
         if (!mounted) return;
         if (equip && mounted) await LockerEquip.equip(ref, item.id);
       }
+      // A freshly earned theme is a happy moment: a good time to ask.
+      await queue.run(() => reviews.maybeAsk(trigger: 'theme'));
     } finally {
       _showing = false;
     }

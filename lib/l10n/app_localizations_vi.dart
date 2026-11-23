@@ -1270,4 +1270,34 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get feedbackEmailHint => 'Mô tả lỗi hoặc ý tưởng tại đây:';
+
+  @override
+  String get shareMatrixTooltip => 'Chia sẻ ma trận';
+
+  @override
+  String get shareMatrixTitle => 'MA TRẬN THÓI QUEN CỦA TÔI';
+
+  @override
+  String shareMatrixSubtitle(int percent, String date) {
+    return 'Đã lấp $percent% · $date';
+  }
+
+  @override
+  String get shareMatrixTagline =>
+      'Xây thói quen từng viên gạch pixel · Miễn phí trên Google Play';
+
+  @override
+  String shareMatrixText(String link) {
+    return 'Mình đang xây thói quen từng viên gạch pixel 🧱 Thử Habit Tracker - Pixel nhé: $link';
+  }
+
+  @override
+  String get shareMatrixError => 'Không tạo được ảnh. Vui lòng thử lại.';
+
+  @override
+  String get configUsageStatsTitle => 'Chia sẻ thống kê sử dụng ẩn danh';
+
+  @override
+  String get configUsageStatsBody =>
+      'Giúp chúng tôi biết tính năng nào hữu ích. Tên thói quen và nội dung bạn nhập không bao giờ được gửi đi.';
 }

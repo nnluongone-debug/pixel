@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
+import 'growth_providers.dart';
 import 'locale_providers.dart';
 
 /// Prefs key set once the first-run intro was finished or skipped.
@@ -17,7 +18,11 @@ class OnboardingController extends Notifier<bool> {
   bool build() =>
       ref.watch(sharedPreferencesProvider).getBool(onboardingDoneKey) ?? false;
 
-  Future<void> complete() => _set(true);
+  Future<void> complete() async {
+    await _set(true);
+    // Logs once per install; replays of the intro are ignored.
+    await ref.read(usageAnalyticsProvider).onboardingCompleted();
+  }
 
   /// Shows the intro again (Config → Replay intro).
   Future<void> reset() => _set(false);

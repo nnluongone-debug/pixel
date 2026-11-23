@@ -1307,4 +1307,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feedbackEmailHint => 'Describe the bug or idea here:';
+
+  @override
+  String get shareMatrixTooltip => 'Share my matrix';
+
+  @override
+  String get shareMatrixTitle => 'MY HABIT MATRIX';
+
+  @override
+  String shareMatrixSubtitle(int percent, String date) {
+    return '$percent% cleared · $date';
+  }
+
+  @override
+  String get shareMatrixTagline =>
+      'Build habits one pixel brick at a time · Free on Google Play';
+
+  @override
+  String shareMatrixText(String link) {
+    return 'Building my habits one pixel brick at a time 🧱 Try Habit Tracker - Pixel: $link';
+  }
+
+  @override
+  String get shareMatrixError =>
+      'Couldn\'t create the image. Please try again.';
+
+  @override
+  String get configUsageStatsTitle => 'Share anonymous usage stats';
+
+  @override
+  String get configUsageStatsBody =>
+      'Helps us see which features work. Habit names and anything you type are never sent.';
 }
