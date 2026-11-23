@@ -1,6 +1,6 @@
 # Project Changelog
 
-## Unreleased — growth
+## 1.1.0 (build 3) — 2026-11-23
 Post-launch growth features.
 
 ### Added
