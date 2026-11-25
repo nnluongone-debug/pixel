@@ -7,16 +7,19 @@ Limits: app name 30 chars, short description 80 chars, full description 4000 cha
 
 ## 🇻🇳 Tiếng Việt (vi-VN)
 
-### Tên ứng dụng (21/30)
-Habit Tracker - Pixel
+### Tên ứng dụng (26/30)
+Theo dõi thói quen - Pixel
 
-### Mô tả ngắn (≤80)
-Xây thói quen tốt từng viên gạch pixel. Giữ chuỗi, lên cấp, mở khóa giao diện!
+### Mô tả ngắn (78/80)
+App theo dõi thói quen vui như game retro: giữ chuỗi, lên cấp, không quảng cáo
+
+A/B test variant (79/80):
+Nhắc uống nước, đọc sách, tập thể dục. Mỗi ngày một viên gạch pixel, giữ chuỗi!
 
 ### Mô tả đầy đủ
 🧱 MỖI THÓI QUEN HOÀN THÀNH LÀ MỘT VIÊN GẠCH PIXEL
 
-Habit Tracker - Pixel biến việc rèn luyện thói quen thành một trò chơi retro. Mỗi lần bạn hoàn thành một thói quen, một viên gạch neon rơi xuống ma trận pixel. Ngày qua ngày, những viên gạch xếp thành bức tranh tiến bộ của chính bạn — nhìn là muốn tiếp tục!
+Theo dõi thói quen - Pixel biến việc rèn luyện thói quen thành một trò chơi retro. Mỗi lần bạn hoàn thành một thói quen, một viên gạch neon rơi xuống ma trận pixel. Ngày qua ngày, những viên gạch xếp thành bức tranh tiến bộ của chính bạn — nhìn là muốn tiếp tục!
 
 ✨ ĐIỂM NỔI BẬT
 
