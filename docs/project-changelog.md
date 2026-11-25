@@ -1,5 +1,31 @@
 # Project Changelog
 
+## 1.2.0 (build 4) — 2026-11-25
+Retention features.
+
+### Added
+- Android home screen widget (Jetpack Glance, small + medium): shows the
+  matrix and today's habits; tapping a habit opens the app and checks it in
+  via `pixelquest://checkin?habit=<id>&day=<today>`. Timer habits open the
+  app instead. Refreshes just after local midnight.
+- Backfill: habit detail shows the last 7 days as chips to mark/unmark a
+  forgotten day (never before the habit's creation day, today excluded).
+  Backfilled blocks earn base XP only (25, no streak/row bonus); un-marking
+  an on-time block with bonus XP asks for confirmation.
+- Earned streak freezes: +1 per 7-day streak (hold max 2), auto-spent on a
+  missed due day so the streak survives. Derived from check-ins (no new
+  stored data or sync); counted from 2026-11-26. Snowflake chip in the HUD,
+  ice tiles on frozen days, one-time toast when a freeze is used.
+
+### Changed
+- Best streak counts frozen days. Badges, per-habit streaks and the XP
+  streak bonus still use real activity only.
+- Widget check-in links carry the day and are ignored when stale or
+  relaunched from Recents (prevents replayed check-ins).
+- Android: Flutter deep linking disabled (home_widget owns the scheme),
+  `HomeWidgetScheduledUpdateReceiver` registered, Compose + Glance added.
+- `habit_completed` analytics only fires for today's check-ins.
+
 ## 1.1.0 (build 3) — 2026-11-23
 Post-launch growth features.
 

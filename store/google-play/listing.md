@@ -41,6 +41,8 @@ Theo dõi thói quen - Pixel biến việc rèn luyện thói quen thành một 
 🏆 Lên cấp & huy hiệu
 • Nhận XP mỗi lần hoàn thành, thưởng thêm khi giữ chuỗi ngày
 • Lên cấp, mở khóa huy hiệu theo từng bậc
+• Khiên băng: giữ chuỗi 7 ngày nhận 1 khiên, tự cứu chuỗi khi lỡ một ngày
+• Quên ghi? Đánh dấu bù trong 7 ngày gần nhất
 • Thống kê tuần/tháng, chuỗi dài nhất, tỉ lệ hoàn thành
 
 🎨 Kho giao diện gạch
@@ -49,7 +51,7 @@ Theo dõi thói quen - Pixel biến việc rèn luyện thói quen thành một 
 • Mở khóa bằng cấp độ và chuỗi ngày — càng kiên trì càng đẹp
 
 📱 Widget màn hình chính
-• Xem ma trận và đánh dấu thói quen ngay ngoài màn hình chính (iOS)
+• Xem ma trận và đánh dấu thói quen ngay ngoài màn hình chính (Android & iOS)
 
 ☁️ Đồng bộ an toàn
 • Dùng ngay không cần tài khoản
@@ -98,6 +100,8 @@ Habit Tracker - Pixel turns building habits into a retro arcade game. Each time 
 🏆 Level up & earn badges
 • Earn XP for every check-in, with a bonus for keeping your streak
 • Level up and unlock tiered badges
+• Streak freezes: earn one every 7-day streak, auto-saves your streak when you miss a day
+• Forgot to log? Backfill any of the last 7 days
 • Weekly/monthly stats, best streak and completion rate
 
 🎨 Brick theme vault
@@ -106,7 +110,7 @@ Habit Tracker - Pixel turns building habits into a retro arcade game. Each time 
 • Unlock them with levels and streaks — the more consistent you are, the cooler it looks
 
 📱 Home screen widget
-• See your matrix and check off habits right from your home screen (iOS)
+• See your matrix and check off habits right from your home screen (Android & iOS)
 
 ☁️ Safe sync
 • Works instantly, no account needed
