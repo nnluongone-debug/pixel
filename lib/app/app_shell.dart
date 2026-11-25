@@ -12,6 +12,7 @@ import '../features/habit_detail/habit_detail_screen.dart';
 import '../features/habit_editor/habit_editor_sheet.dart';
 import '../features/locker/cosmetic_unlock_listener.dart';
 import '../features/home/home_screen.dart';
+import '../features/home/widgets/streak_freeze_listener.dart';
 import '../features/stats/badge_unlock_listener.dart';
 import '../features/stats/stats_screen.dart';
 import '../features/tasks/tasks_screen.dart';
@@ -113,35 +114,37 @@ class _AppShellState extends ConsumerState<AppShell> {
     final initial = identity == null
         ? null
         : ProfileAvatar.initials(profileName, identity.email).characters.first;
-    return BadgeUnlockListener(
-      child: CosmeticUnlockListener(
-        child: Scaffold(
-          extendBody: true,
-          appBar: NeoTopBar(
-            title: tabs[_index].$2,
-            initial: initial,
-            // Guest → login; signed in → profile.
-            onProfileTap: () => AccountEntry.open(context, ref),
-          ),
-          // IndexedStack keeps each tab's scroll position and animations alive.
-          body: IndexedStack(
-            index: _index,
-            // IndexedStack keeps hidden tabs animating; TickerMode pauses them.
-            children: [
-              for (final (i, tab) in const [
-                HomeScreen(),
-                TasksScreen(),
-                StatsScreen(),
-                ConfigScreen(),
-              ].indexed)
-                TickerMode(enabled: i == _index, child: tab),
-            ],
-          ),
-          bottomNavigationBar: NeoBottomNav(
-            items: [for (final t in tabs) t.$1],
-            currentIndex: _index,
-            onTap: _selectTab,
-            onCreate: () => HabitEditorSheet.show(context),
+    return StreakFreezeListener(
+      child: BadgeUnlockListener(
+        child: CosmeticUnlockListener(
+          child: Scaffold(
+            extendBody: true,
+            appBar: NeoTopBar(
+              title: tabs[_index].$2,
+              initial: initial,
+              // Guest → login; signed in → profile.
+              onProfileTap: () => AccountEntry.open(context, ref),
+            ),
+            // IndexedStack keeps each tab's scroll position and animations alive.
+            body: IndexedStack(
+              index: _index,
+              // IndexedStack keeps hidden tabs animating; TickerMode pauses them.
+              children: [
+                for (final (i, tab) in const [
+                  HomeScreen(),
+                  TasksScreen(),
+                  StatsScreen(),
+                  ConfigScreen(),
+                ].indexed)
+                  TickerMode(enabled: i == _index, child: tab),
+              ],
+            ),
+            bottomNavigationBar: NeoBottomNav(
+              items: [for (final t in tabs) t.$1],
+              currentIndex: _index,
+              onTap: _selectTab,
+              onCreate: () => HabitEditorSheet.show(context),
+            ),
           ),
         ),
       ),

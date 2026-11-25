@@ -10,6 +10,7 @@ import '../habits/focus_timer_controller.dart';
 import '../habits/habit_display_format.dart';
 import '../habits/widgets/habit_action_button.dart';
 import '../habits/widgets/habit_card_parts.dart';
+import 'habit_recent_days_strip.dart';
 
 /// One habit up close: icon, name, today's progress and its action button.
 /// Opened from a home card or a tapped reminder.
@@ -128,6 +129,8 @@ class _DetailBody extends ConsumerWidget {
               ),
             ),
           ),
+          const SizedBox(height: 24),
+          HabitRecentDaysStrip(habit: habit),
           const Spacer(),
           HabitActionButton(habit: habit, size: 96),
           const Spacer(),

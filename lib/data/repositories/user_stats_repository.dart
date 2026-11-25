@@ -1,7 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 
 import '../../core/utils/date_key_utils.dart';
-import '../../domain/progression/streak_calculator.dart';
+import '../../domain/progression/streak_freeze.dart';
 import '../../domain/progression/xp_rules.dart';
 import '../models/habit_schedule.dart';
 import '../models/user_stats.dart';
@@ -39,15 +39,7 @@ class UserStatsRepository {
     );
     final totalXp = xpRows.first['total']! as int;
 
-    final dayRows = await executor.rawQuery(
-      'SELECT DISTINCT grid_x FROM check_ins',
-    );
-    final activeDays = {for (final r in dayRows) r['grid_x']! as int};
-    final streak = StreakCalculator.scheduledStreak(
-      activeDays,
-      DateKeys.epochDay(now ?? _clock()),
-      await _anyHabitDue(executor),
-    );
+    final streak = (await _streakState(executor, now)).streak;
 
     final stats = XpRules.statsFromTotalXp(totalXp, streakDays: streak);
     await executor.insert(_table, {
@@ -58,12 +50,25 @@ class UserStatsRepository {
   }
 
   /// Longest global streak ever (any habit completed counts as active;
-  /// days with nothing due never break it).
-  Future<int> getBestStreak() async {
-    final rows = await _db.rawQuery('SELECT DISTINCT grid_x FROM check_ins');
-    return StreakCalculator.longestScheduledStreak({
-      for (final r in rows) r['grid_x']! as int,
-    }, await _anyHabitDue(_db));
+  /// days with nothing due never break it, frozen days do not add to it).
+  Future<int> getBestStreak() async => (await getStreakState()).best;
+
+  /// Global streak, best streak, held freezes and frozen days.
+  Future<StreakFreezeState> getStreakState({DateTime? now}) =>
+      _streakState(_db, now);
+
+  Future<StreakFreezeState> _streakState(
+    DatabaseExecutor executor,
+    DateTime? now,
+  ) async {
+    final dayRows = await executor.rawQuery(
+      'SELECT DISTINCT grid_x FROM check_ins',
+    );
+    return StreakFreeze.simulate(
+      {for (final r in dayRows) r['grid_x']! as int},
+      DateKeys.epochDay(now ?? _clock()),
+      await _anyHabitDue(executor),
+    );
   }
 
   /// A day counts toward the global streak only if at least one habit that

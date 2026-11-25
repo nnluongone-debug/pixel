@@ -61,7 +61,8 @@ struct MediumWidgetView: View {
 
     private func habitRow(_ h: WidgetHabit) -> some View {
         let color = skin.color(h.colorHex)
-        return Link(destination: checkInURL(h.id)) {
+        // Timers need the in-app timer, so they just open the app.
+        return Link(destination: h.type == "timer" ? pixelQuestOpenURL : checkInURL(h.id, day: snapshot.today)) {
             HStack(spacing: 6) {
                 Image(systemName: habitSymbol(h.icon)).font(.system(size: 11)).foregroundStyle(color)
                 VStack(alignment: .leading, spacing: 0) {

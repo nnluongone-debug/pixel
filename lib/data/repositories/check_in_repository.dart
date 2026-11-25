@@ -109,20 +109,28 @@ class CheckInRepository {
   }
 
   /// Drops a new block on top of [dateKey]'s column and awards XP with the
-  /// habit's streak bonus and the line-clear bonus at that moment.
+  /// habit's streak bonus and the line-clear bonus at that moment. A
+  /// [backfill] block (logged for a past day) earns base XP only.
   Future<CheckIn> insertForDay(
     DatabaseExecutor executor,
     String habitId,
-    String dateKey,
-  ) async {
+    String dateKey, {
+    bool backfill = false,
+  }) async {
     final day = DateKeys.epochDayOfKey(dateKey);
-    final schedule = await _scheduleOf(executor, habitId);
-    final priorStreak = StreakCalculator.scheduledStreakBefore(
-      await _activeDaysOf(executor, habitId),
-      day,
-      schedule.includesEpochDay,
-    );
-    final rows = await _completedRows(executor, day, matrixColumns);
+    var xp = XpRules.baseXpPerCheckIn;
+    if (!backfill) {
+      final schedule = await _scheduleOf(executor, habitId);
+      final priorStreak = StreakCalculator.scheduledStreakBefore(
+        await _activeDaysOf(executor, habitId),
+        day,
+        schedule.includesEpochDay,
+      );
+      xp = XpRules.xpForCheckIn(
+        priorStreakDays: priorStreak,
+        completedRows: await _completedRows(executor, day, matrixColumns),
+      );
+    }
     final heightRows = await executor.rawQuery(
       'SELECT COUNT(*) AS height FROM $_table WHERE date = ?',
       [dateKey],
@@ -132,10 +140,7 @@ class CheckInRepository {
       id: _uuid.v4(),
       habitId: habitId,
       date: dateKey,
-      xpEarned: XpRules.xpForCheckIn(
-        priorStreakDays: priorStreak,
-        completedRows: rows,
-      ),
+      xpEarned: xp,
       gridX: day,
       gridY: heightRows.first['height']! as int,
     );

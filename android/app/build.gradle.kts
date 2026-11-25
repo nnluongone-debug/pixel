@@ -3,6 +3,7 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
+    id("org.jetbrains.kotlin.plugin.compose")
     // START: FlutterFire Configuration
     id("com.google.gms.google-services")
     // END: FlutterFire Configuration
@@ -23,6 +24,10 @@ android {
     namespace = "com.pixelquest.pixel_quest"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+
+    buildFeatures {
+        compose = true
+    }
 
     compileOptions {
         // Required by flutter_local_notifications for scheduled reminders.
@@ -67,6 +72,12 @@ kotlin {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    // Glance renders the home screen widget (already a transitive dep of home_widget).
+    implementation("androidx.glance:glance-appwidget:1.2.0")
+
+    // `org.json` is stubbed in JVM unit tests, so use the real implementation there.
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20240303")
 }
 
 flutter {

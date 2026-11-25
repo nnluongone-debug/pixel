@@ -3,7 +3,8 @@ import '../data/models/check_in.dart';
 import '../data/models/habit.dart';
 import '../data/models/user_stats.dart';
 
-/// Builds the JSON payload the iOS widget extension reads from the App Group.
+/// Builds the JSON payload the home screen widgets read (iOS App Group, Android
+/// SharedPreferences). Payload version 1 is shared by both platforms.
 /// Pure: all inputs are explicit so it is easy to test.
 String _identity(String code) => code;
 

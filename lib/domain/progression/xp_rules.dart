@@ -3,7 +3,8 @@ import '../../data/models/user_stats.dart';
 /// XP and level formulas. Levels are always derived from the lifetime XP
 /// total, so undoing a check-in can never leave stats inconsistent.
 abstract final class XpRules {
-  /// XP for placing one block on the matrix.
+  /// XP for placing one block on the matrix. Blocks backfilled for a past
+  /// day earn exactly this, with no streak or line-clear bonus.
   static const int baseXpPerCheckIn = 25;
 
   /// Bonus per consecutive prior day of the same habit.

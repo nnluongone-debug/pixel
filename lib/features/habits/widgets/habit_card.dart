@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/date_key_utils.dart';
 import '../../../core/utils/habit_icons.dart';
 import '../../../data/models/habit.dart';
 import '../../../data/models/progress_update.dart';
@@ -51,7 +52,12 @@ class _HabitCardState extends ConsumerState<HabitCard>
     _events = ref
         .read(progressEventsProvider)
         .stream
-        .where((u) => u.habit.id == habit.id && u.placedCheckIn != null)
+        // Backfilled past days must not celebrate on today's card.
+        .where(
+          (u) =>
+              u.habit.id == habit.id &&
+              u.placedCheckIn?.date == DateKeys.fromDate(DateTime.now()),
+        )
         .listen(_onTargetReached);
   }
 

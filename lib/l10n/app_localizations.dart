@@ -1466,6 +1466,42 @@ abstract class AppLocalizations {
   /// **'This habit no longer exists.'**
   String get detailNotFound;
 
+  /// No description provided for @detailRecentDaysTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'LAST 7 DAYS'**
+  String get detailRecentDaysTitle;
+
+  /// No description provided for @detailRecentDaysHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a day you forgot to log'**
+  String get detailRecentDaysHint;
+
+  /// No description provided for @detailUnmarkBonusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'REMOVE THIS DAY?'**
+  String get detailUnmarkBonusTitle;
+
+  /// No description provided for @detailUnmarkBonusBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This day was checked in on time and earned bonus XP. If you remove it, that bonus is lost for good, even if you mark the day again.'**
+  String get detailUnmarkBonusBody;
+
+  /// No description provided for @detailUnmarkBonusConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'REMOVE'**
+  String get detailUnmarkBonusConfirm;
+
+  /// No description provided for @detailBackfillFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update that day. Try again.'**
+  String get detailBackfillFailed;
+
   /// No description provided for @editorClearTitle.
   ///
   /// In en, this message translates to:
@@ -1735,6 +1771,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{days}D STREAK'**
   String gridHudStreak(int days);
+
+  /// No description provided for @gridHudFreezes.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} FREEZE'**
+  String gridHudFreezes(int n);
+
+  /// No description provided for @streakFreezeUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak freeze used on {day}. Streak saved!'**
+  String streakFreezeUsed(String day);
+
+  /// No description provided for @streakFreezeTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Earn 1 per 7-day streak, hold up to 2'**
+  String get streakFreezeTooltip;
 
   /// No description provided for @gridHudLevel.
   ///

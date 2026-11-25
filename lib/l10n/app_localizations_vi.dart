@@ -828,6 +828,26 @@ class AppLocalizationsVi extends AppLocalizations {
   String get detailNotFound => 'Thói quen này không còn tồn tại.';
 
   @override
+  String get detailRecentDaysTitle => '7 NGÀY QUA';
+
+  @override
+  String get detailRecentDaysHint => 'Chạm vào ngày bạn quên ghi';
+
+  @override
+  String get detailUnmarkBonusTitle => 'BỎ NGÀY NÀY?';
+
+  @override
+  String get detailUnmarkBonusBody =>
+      'Ngày này được điểm danh đúng hạn và nhận XP thưởng. Nếu bỏ đi, phần thưởng sẽ mất vĩnh viễn, kể cả khi bạn đánh dấu lại.';
+
+  @override
+  String get detailUnmarkBonusConfirm => 'BỎ';
+
+  @override
+  String get detailBackfillFailed =>
+      'Không thể cập nhật ngày này. Hãy thử lại.';
+
+  @override
   String get editorClearTitle => 'Xóa tên';
 
   @override
@@ -983,6 +1003,19 @@ class AppLocalizationsVi extends AppLocalizations {
   String gridHudStreak(int days) {
     return 'CHUỖI ${days}N';
   }
+
+  @override
+  String gridHudFreezes(int n) {
+    return '$n BĂNG';
+  }
+
+  @override
+  String streakFreezeUsed(String day) {
+    return 'Đã dùng 1 khiên băng cho $day. Chuỗi được giữ!';
+  }
+
+  @override
+  String get streakFreezeTooltip => 'Nhận 1 mỗi chuỗi 7 ngày, giữ tối đa 2';
 
   @override
   String gridHudLevel(int level) {

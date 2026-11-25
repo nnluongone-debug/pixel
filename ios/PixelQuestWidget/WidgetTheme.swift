@@ -75,12 +75,13 @@ func habitSymbol(_ name: String) -> String {
 /// Flutter (`HomeWidget.widgetClicked`); every widget link must include it.
 let pixelQuestOpenURL = URL(string: "pixelquest://open?homeWidget")!
 
-func checkInURL(_ habitId: String) -> URL {
+func checkInURL(_ habitId: String, day: String) -> URL {
     var c = URLComponents()
     c.scheme = "pixelquest"
     c.host = "checkin"
     c.queryItems = [
         URLQueryItem(name: "habit", value: habitId),
+        URLQueryItem(name: "day", value: day),
         URLQueryItem(name: "homeWidget", value: nil),
     ]
     return c.url ?? pixelQuestOpenURL

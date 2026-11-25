@@ -33,6 +33,8 @@ class MatrixCanvasCard extends ConsumerWidget {
       }
     });
     final skin = BrickSkin.of(ref.watch(equippedThemeProvider));
+    final frozenDays =
+        ref.watch(streakFreezeProvider).value?.frozenDays ?? const <int>{};
 
     return Container(
       decoration: BoxDecoration(
@@ -55,6 +57,7 @@ class MatrixCanvasCard extends ConsumerWidget {
               skipLoadingOnReload: true,
               data: (list) => _Body(
                 blocks: list,
+                frozenDays: frozenDays,
                 skin: skin,
                 rows: PixelMatrixGrid.rowsFor(list),
               ),
@@ -95,9 +98,15 @@ class MatrixCanvasCard extends ConsumerWidget {
 }
 
 class _Body extends ConsumerStatefulWidget {
-  const _Body({required this.blocks, required this.skin, required this.rows});
+  const _Body({
+    required this.blocks,
+    required this.skin,
+    required this.rows,
+    required this.frozenDays,
+  });
 
   final List<CheckInBlock> blocks;
+  final Set<int> frozenDays;
   final int rows;
   final BrickSkin skin;
 
@@ -143,6 +152,7 @@ class _BodyState extends ConsumerState<_Body> {
             children: [
               PixelMatrixGrid(
                 blocks: widget.blocks,
+                frozenDays: widget.frozenDays,
                 skin: widget.skin,
                 rows: rows,
               ),

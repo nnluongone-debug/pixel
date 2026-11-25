@@ -24,7 +24,7 @@ final homeWidgetSyncServiceProvider = Provider<HomeWidgetSyncService>(
   (ref) => const HomeWidgetSyncService(),
 );
 
-/// Keeps the iOS widget snapshot fresh and handles widget deep links.
+/// Keeps the home screen widget snapshot fresh and handles widget deep links.
 /// Watch it once from the app shell; it has no value of its own.
 final homeWidgetSyncProvider = Provider<void>((ref) {
   if (!HomeWidgetSyncService.isSupported) return;
@@ -92,14 +92,23 @@ Future<void> _pushSnapshot(Ref ref) async {
   }
 }
 
-/// `pixelquest://checkin?habit=<id>` completes/increments a habit;
-/// `pixelquest://open` only opens the app.
+/// `pixelquest://checkin?habit=<id>&day=<yyyy-MM-dd>` completes/increments a
+/// habit; `pixelquest://open` only opens the app. A stale `day` is ignored so
+/// a redelivered launch intent cannot check in on a later day. Links without
+/// `day` come from iOS widgets written before the parameter existed.
 Future<void> _handleUri(Ref ref, Uri? uri) async {
   if (uri == null || uri.scheme != 'pixelquest' || uri.host != 'checkin') {
     return;
   }
   final id = uri.queryParameters['habit'];
   if (id == null || id.isEmpty) return;
+  final day = uri.queryParameters['day'];
+  final today = DateKeys.fromDate(DateTime.now());
+  if (day == null
+      ? defaultTargetPlatform != TargetPlatform.iOS
+      : day != today) {
+    return;
+  }
   try {
     final habits = await ref.read(habitsControllerProvider.future);
     final habit = habits.where((h) => h.id == id).firstOrNull;
@@ -107,13 +116,12 @@ Future<void> _handleUri(Ref ref, Uri? uri) async {
     final controller = ref.read(habitsControllerProvider.notifier);
     switch (habit.type) {
       case HabitType.counter:
-        final doneToday =
-            habit.progressDate == DateKeys.fromDate(DateTime.now()) &&
-            habit.isCompleted;
+        final doneToday = habit.progressDate == today && habit.isCompleted;
         if (!doneToday) await controller.increment(id);
       case HabitType.checklist:
         await controller.setCompleted(id, completed: true);
       case HabitType.timer:
+        // The widget opens the app for timers instead of linking here.
         break;
     }
   } catch (e, st) {

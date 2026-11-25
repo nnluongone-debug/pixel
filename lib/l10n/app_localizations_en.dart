@@ -834,6 +834,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get detailNotFound => 'This habit no longer exists.';
 
   @override
+  String get detailRecentDaysTitle => 'LAST 7 DAYS';
+
+  @override
+  String get detailRecentDaysHint => 'Tap a day you forgot to log';
+
+  @override
+  String get detailUnmarkBonusTitle => 'REMOVE THIS DAY?';
+
+  @override
+  String get detailUnmarkBonusBody =>
+      'This day was checked in on time and earned bonus XP. If you remove it, that bonus is lost for good, even if you mark the day again.';
+
+  @override
+  String get detailUnmarkBonusConfirm => 'REMOVE';
+
+  @override
+  String get detailBackfillFailed => 'Could not update that day. Try again.';
+
+  @override
   String get editorClearTitle => 'Clear title';
 
   @override
@@ -997,6 +1016,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String gridHudStreak(int days) {
     return '${days}D STREAK';
   }
+
+  @override
+  String gridHudFreezes(int n) {
+    return '$n FREEZE';
+  }
+
+  @override
+  String streakFreezeUsed(String day) {
+    return 'Streak freeze used on $day. Streak saved!';
+  }
+
+  @override
+  String get streakFreezeTooltip => 'Earn 1 per 7-day streak, hold up to 2';
 
   @override
   String gridHudLevel(int level) {

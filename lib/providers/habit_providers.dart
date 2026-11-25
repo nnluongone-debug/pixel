@@ -7,6 +7,8 @@ import '../data/models/check_in.dart';
 import '../data/models/habit.dart';
 import '../data/models/progress_update.dart';
 import '../data/models/user_stats.dart';
+import '../domain/progression/streak_freeze.dart';
+import '../data/repositories/habit_backfill_repository.dart';
 import '../data/repositories/habit_repository.dart';
 import '../features/habits/focus_timer_controller.dart';
 import 'growth_providers.dart';
@@ -14,6 +16,11 @@ import 'repository_providers.dart';
 
 final userStatsProvider = FutureProvider<UserStats>(
   (ref) => ref.watch(userStatsRepositoryProvider).getStats(),
+);
+
+/// Global streak freezes: held count and frozen days (see [StreakFreeze]).
+final streakFreezeProvider = FutureProvider<StreakFreezeState>(
+  (ref) => ref.watch(userStatsRepositoryProvider).getStreakState(),
 );
 
 /// Blocks for the visible 10-day matrix.
@@ -40,6 +47,19 @@ final habitStreakProvider = FutureProvider.family<int, String>(
   (ref, habitId) =>
       ref.watch(checkInRepositoryProvider).getHabitStreak(habitId),
 );
+
+/// Day keys within the backfill window (last 7 days, today excluded) on
+/// which one habit was done.
+final habitRecentDaysProvider = FutureProvider.family<Set<String>, String>((
+  ref,
+  habitId,
+) {
+  final today = ref.watch(currentDayProvider);
+  final window = HabitBackfillRepository.windowKeys(today);
+  return ref
+      .watch(habitBackfillRepositoryProvider)
+      .doneDays(habitId, window.first, window.last);
+});
 
 /// Today's `YYYY-MM-DD`. Bumped by [HabitsController.refreshAll] (app resume,
 /// local midnight) so day-scoped UI such as the heatmap month moves on.
@@ -124,6 +144,19 @@ class HabitsController extends AsyncNotifier<List<Habit>> {
   Future<ProgressUpdate> setCompleted(String id, {required bool completed}) =>
       _mutate((repo) => repo.setCompleted(id, completed: completed));
 
+  /// Marks or unmarks one of the last 7 days (not today) for a habit.
+  Future<ProgressUpdate> setPastDay(
+    String id,
+    String dateKey, {
+    required bool done,
+  }) async {
+    final result = await ref
+        .read(habitBackfillRepositoryProvider)
+        .setDone(id, dateKey, done: done);
+    _afterMutation(result);
+    return result;
+  }
+
   Future<void> delete(String id) {
     ref.read(focusTimerProvider.notifier).cancelFor(id);
     return _mutate((repo) => repo.deleteHabit(id));
@@ -131,17 +164,26 @@ class HabitsController extends AsyncNotifier<List<Habit>> {
 
   Future<T> _mutate<T>(Future<T> Function(HabitRepository repo) action) async {
     final result = await action(ref.read(habitRepositoryProvider));
-    _refreshAll();
     if (result is ProgressUpdate) {
-      ref.read(progressEventsProvider).add(result);
-      _logProgress(result);
+      _afterMutation(result);
+    } else {
+      _refreshAll();
     }
     return result;
   }
 
+  /// Refresh, popups and analytics tail shared by every progress mutation.
+  void _afterMutation(ProgressUpdate result) {
+    _refreshAll();
+    ref.read(progressEventsProvider).add(result);
+    _logProgress(result);
+  }
+
   void _logProgress(ProgressUpdate update) {
     final analytics = ref.read(usageAnalyticsProvider);
-    if (update.placedCheckIn != null) {
+    final placed = update.placedCheckIn;
+    // Backfilled blocks are not today's completion.
+    if (placed != null && placed.date == DateKeys.fromDate(DateTime.now())) {
       unawaited(
         analytics.habitCompleted(
           habitId: update.habit.id,
@@ -162,8 +204,10 @@ class HabitsController extends AsyncNotifier<List<Habit>> {
     ref.read(currentDayProvider.notifier).sync();
     ref.invalidateSelf();
     ref.invalidate(userStatsProvider);
+    ref.invalidate(streakFreezeProvider);
     ref.invalidate(matrixProvider);
     ref.invalidate(completedRowsProvider);
     ref.invalidate(habitStreakProvider);
+    ref.invalidate(habitRecentDaysProvider);
   }
 }

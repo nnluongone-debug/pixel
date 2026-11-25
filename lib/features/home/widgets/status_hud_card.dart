@@ -34,6 +34,7 @@ class StatusHudCard extends ConsumerWidget {
     // Keep showing the last stats while a refresh is in flight.
     final stats = ref.watch(userStatsProvider).value ?? UserStats.initial;
     final now = today ?? DateTime.now();
+    final freezes = ref.watch(streakFreezeProvider).value?.held ?? 0;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -87,6 +88,18 @@ class StatusHudCard extends ConsumerWidget {
                     text: context.l10n.gridHudStreak(stats.streakDays),
                     trailing: Icons.bolt_rounded,
                   ),
+                  if (freezes > 0) ...[
+                    const SizedBox(width: 4),
+                    Tooltip(
+                      message: context.l10n.streakFreezeTooltip,
+                      child: _Pill(
+                        color: AppColors.cyan,
+                        text: context.l10n.gridHudFreezes(freezes),
+                        trailing: Icons.ac_unit,
+                        trailingColor: AppColors.cyan,
+                      ),
+                    ),
+                  ],
                   const SizedBox(width: 4),
                   _Pill(
                     color: AppColors.cyan,
@@ -114,6 +127,7 @@ class _Pill extends StatelessWidget {
     this.glow,
     this.leading,
     this.trailing,
+    this.trailingColor = AppColors.amber,
   });
 
   final Color color;
@@ -121,6 +135,7 @@ class _Pill extends StatelessWidget {
   final String text;
   final Widget? leading;
   final IconData? trailing;
+  final Color trailingColor;
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +163,7 @@ class _Pill extends StatelessWidget {
           ),
           if (trailing != null) ...[
             const SizedBox(width: 4),
-            Icon(trailing, size: 13, color: AppColors.amber),
+            Icon(trailing, size: 13, color: trailingColor),
           ],
         ],
       ),

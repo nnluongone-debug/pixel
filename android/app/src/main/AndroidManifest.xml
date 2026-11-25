@@ -25,6 +25,8 @@
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. -->
+            <!-- Mirrors iOS FlutterDeepLinkingEnabled=false: home_widget owns pixelquest://. -->
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="false"/>
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
@@ -41,6 +43,25 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
+        </receiver>
+        <!-- Home screen widget (Glance). Exported as AppWidget requires. -->
+        <receiver android:name=".widget.PixelQuestWidgetReceiver" android:exported="true"
+            android:label="@string/widget_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/pixel_quest_widget_info"/>
+        </receiver>
+        <!-- Required by HomeWidget.scheduleWidgetUpdates (midnight refresh);
+             re-arms the alarms after reboot, app update and exact-alarm changes. -->
+        <receiver android:name="es.antonborri.home_widget.HomeWidgetScheduledUpdateReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED"/>
             </intent-filter>
         </receiver>
         <!-- Collection starts off; main.dart enables it per the user's

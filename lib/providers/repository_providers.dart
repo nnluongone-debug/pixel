@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../data/repositories/check_in_repository.dart';
+import '../data/repositories/habit_backfill_repository.dart';
 import '../data/repositories/habit_repository.dart';
 import '../data/repositories/user_stats_repository.dart';
 
@@ -21,6 +22,14 @@ final checkInRepositoryProvider = Provider<CheckInRepository>(
 
 final habitRepositoryProvider = Provider<HabitRepository>(
   (ref) => HabitRepository(
+    ref.watch(databaseProvider),
+    checkIns: ref.watch(checkInRepositoryProvider),
+    stats: ref.watch(userStatsRepositoryProvider),
+  ),
+);
+
+final habitBackfillRepositoryProvider = Provider<HabitBackfillRepository>(
+  (ref) => HabitBackfillRepository(
     ref.watch(databaseProvider),
     checkIns: ref.watch(checkInRepositoryProvider),
     stats: ref.watch(userStatsRepositoryProvider),

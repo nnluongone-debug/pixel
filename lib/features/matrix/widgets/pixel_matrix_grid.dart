@@ -8,6 +8,7 @@ import '../models/check_in_block.dart';
 import '../skins/brick_skin.dart';
 import '../skins/neon_glow_skin.dart';
 import 'drop_effect.dart';
+import 'frozen_day_painter.dart';
 import 'matrix_axis_labels.dart';
 import 'matrix_effects_painter.dart';
 import 'matrix_grid_painter.dart';
@@ -28,6 +29,7 @@ class PixelMatrixGrid extends StatefulWidget {
     this.columns = MatrixCalendar.defaultColumns,
     this.rows = minRows,
     this.today,
+    this.frozenDays = const {},
     this.skin = const NeonGlowSkin(),
   });
 
@@ -50,6 +52,9 @@ class PixelMatrixGrid extends StatefulWidget {
 
   /// Overrides "now" (tests, previews). Defaults to the device clock.
   final DateTime? today;
+
+  /// Epoch days saved by a streak freeze; shown as ice tiles when empty.
+  final Set<int> frozenDays;
 
   /// Brick style. Changing it restyles in place; the grid keeps its state, so
   /// running drop animations survive.
@@ -228,6 +233,21 @@ class _PixelMatrixGridState extends State<PixelMatrixGrid>
                       ),
                     ),
                   ),
+                  if (widget.frozenDays.isNotEmpty)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: RepaintBoundary(
+                          child: CustomPaint(
+                            painter: FrozenDayPainter(
+                              geometry: geometry,
+                              calendar: _calendar,
+                              placement: _placement,
+                              frozenDays: widget.frozenDays,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   // Own layer: drop animations repaint only this, never the
                   // cached static layer.
                   Positioned.fill(

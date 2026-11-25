@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pixel_quest/core/utils/date_key_utils.dart';
 import 'package:pixel_quest/data/database/app_database.dart';
 import 'package:pixel_quest/data/models/habit.dart';
 import 'package:pixel_quest/data/repositories/check_in_repository.dart';
@@ -226,6 +227,36 @@ void main() {
     expect(await checkIns.getHabitStreak(h.id), 1);
 
     now = DateTime(2026, 10, 13, 9); // Tuesday: Monday was missed
+    expect((await stats.getStats()).streakDays, 0);
+  });
+
+  test('7-day streak survives one missed day via an earned freeze', () async {
+    // After the v1.2.0 freeze cutoff (2026-11-26).
+    now = DateTime(2026, 12, 1, 9);
+    final h = await habits.createHabit(
+      name: 'Run',
+      type: HabitType.checklist,
+      target: 1,
+      colorHex: '#00FF66',
+      iconName: 'fitness',
+    );
+    for (var d = 1; d <= 7; d++) {
+      now = DateTime(2026, 12, d, 9);
+      await habits.setCompleted(h.id, completed: true);
+    }
+    now = DateTime(2026, 12, 9, 9); // Dec 8 missed, today not done yet
+    var state = await stats.getStreakState();
+    expect(state.streak, 7);
+    expect(state.held, 0);
+    expect(state.frozenDays, {DateKeys.epochDay(DateTime(2026, 12, 8))});
+    expect((await stats.getStats()).streakDays, 7);
+    expect(await stats.getBestStreak(), 7);
+
+    await habits.setCompleted(h.id, completed: true);
+    state = await stats.getStreakState();
+    expect(state.streak, 8);
+
+    now = DateTime(2026, 12, 11, 9); // Dec 10 missed with no freeze left
     expect((await stats.getStats()).streakDays, 0);
   });
 }
